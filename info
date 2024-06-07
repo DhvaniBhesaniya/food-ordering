@@ -11,6 +11,10 @@ npm run dev
 
 import google outfit font and past it in index.css
 
+
+npm install react-slick slick-carousel
+
+
 above done in frontend
 .............................................................
 
