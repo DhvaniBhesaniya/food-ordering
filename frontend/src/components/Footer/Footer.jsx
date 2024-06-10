@@ -9,10 +9,10 @@ const Footer = () => {
           <div className="footer-content-left">
             <img src={assets.logo} alt="" />
             <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Similique, quos eius. Iste, eius. Voluptates beatae asperiores
-              aliquam inventore consequatur quasi corrupti quos ipsam, neque
-              autem, reiciendis iure sequi corporis magni.
+              Best way to Order,
+              See the menu..
+              Add your food..
+              CheckOut & Enjoy it.   
             </p>
             <div className="footer-social-icons">
               <img src={assets.facebook_icon} alt="" />

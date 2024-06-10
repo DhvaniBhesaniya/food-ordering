@@ -1,8 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./LoginPopup.css";
 import { assets } from "../../assets/frontend_assets/assets";
 const LoginPopup = ({ setShowLogin }) => {
   const [currState, setCurrState] = useState("Login");
+  useEffect(() => {
+  
+    document.body.style.overflow = 'hidden';
+
+  
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
 
   return (
     <div className="login-popup">
@@ -19,22 +28,26 @@ const LoginPopup = ({ setShowLogin }) => {
           {currState === "Login" ? (
             <></>
           ) : (
-            <input type="text" placeholder="your name" required />
+            <input type="text" placeholder="John doe" required />
           )}
-          <input type="email" placeholder="your email" required />
+          <input type="email" placeholder="john.doe@gmail.com" required />
           <input type="password" placeholder="Password" required />
         </div>
         <button>{currState === "Sign Up" ? "Create Account" : "Login"}</button>
         <div className="login-popup-condition">
-          <input type="checkbox" required />
           {currState === "Login" ? (
             <></>
           ) : (
-            <p>by continuing, i aggree to the terms of use & privacy policy.</p>
+            <>
+              <input type="checkbox" required />
+              <p>
+                By continuing, i aggree to the terms of use & privacy policy.
+              </p>
+            </>
           )}
         </div>
         {currState === "Login" ? (
-          <p>
+          <p className="p-create-new-acc">
             Create a new account?{" "}
             <span onClick={() => setCurrState("Sign Up")}>Click Here</span>
           </p>
