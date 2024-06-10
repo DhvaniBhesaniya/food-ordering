@@ -1,11 +1,26 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import "./Cart.css";
 import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
-  const { setCartItems, cartItems, food_list, getTotalCartAmount,removeFromCart} = useContext(StoreContext);
-  const navigate=  useNavigate();
+  const {
+    setCartItems,
+    cartItems,
+    food_list,
+    getTotalCartAmount,
+    removeFromCart,
+  } = useContext(StoreContext);
+  const navigate = useNavigate();
+  const [showPopup, setShowPopup] = useState(false);
+
+  const handleCheckout = () => {
+    if (getTotalCartAmount() > 0) {
+      navigate("/order");
+    } else {
+      setShowPopup(true);
+    }
+  };
 
   return (
     <div className="cart">
@@ -31,10 +46,8 @@ const Cart = () => {
                   <p>{cartItems[item._id]}</p>
                   <p>${item.price * cartItems[item._id]}</p>
                   <p>
-                  <span
-                      onClick={() =>
-                        removeFromCart(item._id)
-                      }
+                    <span
+                      onClick={() => removeFromCart(item._id)}
                       className="cross"
                     >
                       x
@@ -88,15 +101,29 @@ const Cart = () => {
             <hr />
             <div className="cart-total-details">
               <p>Deliver Fee</p>
-              <p>${2}</p>
+              <p>${getTotalCartAmount() === 0 ? 0 : 2}</p>
             </div>
             <hr />
             <div className="cart-total-details">
               <p>Total</p>
-              <b>${ getTotalCartAmount() + 2}</b>
+              <b>
+                ${getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + 2}
+              </b>
             </div>
           </div>
-          <button onClick={()=> navigate('/order')}> PROCEED TO CHECKOUT</button>
+          <button onClick={handleCheckout}>PROCEED TO CHECKOUT</button>
+
+          {showPopup && (
+            <div className="popup">
+              <div className="popup-content">
+                <p>
+                  There are no items in the cart. Please add products to the
+                  cart first.
+                </p>
+                <button onClick={() => setShowPopup(false)}>Close</button>
+              </div>
+            </div>
+          )}
         </div>
         <div className="cart-promocode">
           <div>
