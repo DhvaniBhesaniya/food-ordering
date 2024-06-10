@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import "./Cart.css";
 import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
@@ -12,15 +12,13 @@ const Cart = () => {
     removeFromCart,
   } = useContext(StoreContext);
   const navigate = useNavigate();
-  const [showPopup, setShowPopup] = useState(false);
-
   const handleCheckout = () => {
     if (getTotalCartAmount() > 0) {
       navigate("/order");
-    } else {
-      setShowPopup(true);
     }
   };
+
+  const isCheckoutDisabled = getTotalCartAmount() === 0;
 
   return (
     <div className="cart">
@@ -111,19 +109,13 @@ const Cart = () => {
               </b>
             </div>
           </div>
-          <button onClick={handleCheckout}>PROCEED TO CHECKOUT</button>
-
-          {showPopup && (
-            <div className="popup">
-              <div className="popup-content">
-                <p>
-                  There are no items in the cart. Please add products to the
-                  cart first.
-                </p>
-                <button onClick={() => setShowPopup(false)}>Close</button>
-              </div>
-            </div>
-          )}
+          <button
+            onClick={handleCheckout}
+            disabled={isCheckoutDisabled}
+            className={isCheckoutDisabled ? "disabled-button" : ""}
+          >
+            PROCEED TO CHECKOUT
+          </button>
         </div>
         <div className="cart-promocode">
           <div>

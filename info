@@ -13,6 +13,8 @@ import google outfit font and past it in index.css
 
 
 npm install react-slick slick-carousel
+npm install swiper
+
 
 
 above done in frontend
@@ -21,9 +23,11 @@ above done in frontend
 
 
 
+npm init
+npm install express mongoose jsonwebtoken bcrypt cors dotenv body-parser multer stripe validator nodemon
 
-
-
+above done in backend
+.............................................................
 
 
 timeline : 52.48   https://www.youtube.com/watch?v=DBMPXJJfQEA
