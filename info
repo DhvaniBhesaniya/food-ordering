@@ -30,7 +30,31 @@ above done in backend
 .............................................................
 
 
+
+npm create vite@latest .
+
+select {
+    √ Select a framework: » React
+√ Select a variant: » JavaScript
+}
+
+Done. Now run:
+
+  npm install
+  npm run dev
+
+
+npm install axios react-toastify react-router-dom
+
+above done in admin
+.............................................................
+
+
 mongodb u- tomato  and p- p1MjFPD5y2fVUVJo  
 mongodb+srv://tomato:p1MjFPD5y2fVUVJo@gohan.kns9i2e.mongodb.net/food-delivery?retryWrites=true&w=majority&appName=gohan 
-timeline : 52.48   https://www.youtube.com/watch?v=DBMPXJJfQEA
+timeline : 4;46:33   https://www.youtube.com/watch?v=DBMPXJJfQEA
+............................................................
+
+if done git clone 
+then do run npm i  in backend and frontend folder.
 ............................................................
