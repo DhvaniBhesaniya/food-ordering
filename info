@@ -46,6 +46,12 @@ Done. Now run:
 
 npm install axios react-toastify react-router-dom
 
+
+
+this gist  (  import { ToastContainer, toast } from 'react-toastify';
+  import 'react-toastify/dist/ReactToastify.css';)  copy and past it to app.jsx
+  https://www.npmjs.com/package/react-toastify?activeTab=readme
+
 above done in admin
 .............................................................
 
@@ -56,5 +62,5 @@ timeline : 4:47:55   https://www.youtube.com/watch?v=DBMPXJJfQEA
 ............................................................
 
 if done git clone 
-then do run npm i  in backend and frontend folder.
+then do run npm i  in backend  admin and frontend folder.
 ............................................................
