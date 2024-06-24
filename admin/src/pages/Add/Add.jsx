@@ -13,7 +13,7 @@ const Add = () => {
     category: "Salad",
     price: "",
   });
-  console.log(data);
+  // console.log(data);
 
   const onChangeHandler = (event) => {
     const name = event.target.name;

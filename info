@@ -15,6 +15,7 @@ import google outfit font and past it in index.css
 npm install react-slick slick-carousel
 npm install swiper
 
+ npm install -D sass
 
 
 above done in frontend
