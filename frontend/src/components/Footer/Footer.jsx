@@ -65,7 +65,8 @@ const Footer = () => {
               Best way to Order,
               See the menu..
               Add your food..
-              CheckOut & Enjoy it.   
+              CheckOut & Enjoy it.
+              <br/>   
             </p>
             <div className="footer-social-icons">
               <img src={assets.facebook_icon} alt="" />
@@ -87,6 +88,7 @@ const Footer = () => {
             <ul>
               <li>+91 101-010-1010</li>
               <li>contact@tomato.com</li>
+              <li><b>Dhvani Bhesaniya</b></li>
             </ul>
           </div>
         </div>
