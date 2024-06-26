@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import "./List.css";
 import { toast } from "react-toastify";
 import axios from "axios";
-const List = () => {
-  const url = "http://localhost:4000";
+const List = ({url}) => {
+  // const url = "http://localhost:4000";
   const [list, setList] = useState([]);
 
   const fetchList = async () => {
     const response = await axios.get(`${url}/api/food/list`);
-    console.log(response);
+    // console.log(response);
     if (response.data.success) {
       setList(response.data.data);
     } else {
