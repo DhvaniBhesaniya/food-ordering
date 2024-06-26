@@ -26,6 +26,12 @@
 .food-item-name-rating img{
     width: 70px;
 }
+/* Parent container for price and basket icon */
+.food-item-price-cart {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
 .food-item-desc{
  color: #676767;
  font-size: 12px;     
@@ -34,9 +40,13 @@
     color: tomato;
     font-size: 22px;
     font-weight: 500;
-    margin: 10px 0px;
+    margin: 10px 150px 0px 0px;
+    
 }
 
+.food-item-view-cart{
+    margin-top: 5px;
+}
 
 .food-item-img-container{
     position: relative;
