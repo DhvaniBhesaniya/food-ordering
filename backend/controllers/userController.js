@@ -5,7 +5,26 @@ import validator from "validator";
 
 // login user
 
-const loginUser = async (req, res) => {};
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      return res.json({ success: false, message: "User does not exist" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.json({ success: false, message: "Invalid Password" });
+    }
+    const token = createToken(user._id);
+    res.json({ success: true, message: "Login successful", token });
+  } catch (error) {
+    res.json({ success: false, message: error });
+  }
+};
 
 const createToken = (id) => {
   const token = jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -49,13 +68,15 @@ const registerUser = async (req, res) => {
     });
 
     const user = await newUser.save();
-    const token  = createToken(user._id);
+    const token = createToken(user._id);
     res.json({
       success: true,
       message: "User registered successfully",
       token,
     });
-  } catch (error) {}
+  } catch (error) {
+    res.json({ success: false, message: error });
+  }
 };
 
 export { loginUser, registerUser };
