@@ -17,6 +17,8 @@ npm install swiper
 
  npm install -D sass
 
+ npm install axios
+
 
 above done in frontend
 .............................................................

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import "./Cart.css";
 import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +10,17 @@ const Cart = () => {
     food_list,
     getTotalCartAmount,
     removeFromCart,
+    token
   } = useContext(StoreContext);
+
+useEffect(()=>{
+  if (token == ""){
+    // show popup message with content  please login first to see cart details
+    alert("please login first to see cart details")
+    navigate("/")
+  }
+})
+
   const navigate = useNavigate();
   const handleCheckout = () => {
     if (getTotalCartAmount() > 0) {

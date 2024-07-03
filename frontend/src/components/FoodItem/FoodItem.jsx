@@ -5,12 +5,13 @@ import { StoreContext } from "../../context/StoreContext";
 import { Link } from "react-router-dom";
 
 const FoodItem = ({ id, name, price, description, image }) => {
-  const { cartItems, addtoCart, removeFromCart } = useContext(StoreContext);
+  const { cartItems, addtoCart, removeFromCart,url } = useContext(StoreContext);
 
   return (
     <div className="food-item">
       <div className="food-item-img-container">
-        <img className="food-item-image" src={image} alt="" />
+        {/* <img className="food-item-image" src={image} alt="" /> */}
+        <img className="food-item-image" src={url+"/images/"+image} alt="" />
         {!cartItems[id] ? (
           <img
             className="add"
