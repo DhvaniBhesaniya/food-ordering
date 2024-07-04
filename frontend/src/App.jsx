@@ -17,7 +17,7 @@ const App = () => {
     // Simulate loading for 5 seconds
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 5000);
+    }, 100);
 
     return () => clearTimeout(timer); // Cleanup timer on unmount
   }, []);

@@ -10,7 +10,8 @@ const Cart = () => {
     food_list,
     getTotalCartAmount,
     removeFromCart,
-    token
+    token,
+    url
   } = useContext(StoreContext);
 
 useEffect(()=>{
@@ -48,7 +49,7 @@ useEffect(()=>{
             return (
               <div>
                 <div className="cart-item-title cart-items-item">
-                  <img src={item.image} alt="" />
+                  <img src={url+"/images/"+item.image} alt="" />
                   <p>{item.name}</p>
                   <p>${item.price}</p>
                   <p>{cartItems[item._id]}</p>

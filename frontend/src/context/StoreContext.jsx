@@ -5,25 +5,26 @@ import { createContext, useEffect, useState } from "react";
 export const StoreContext = createContext(null);
 const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
+  console.log(cartItems);
   // use this foodlist to get the data from the database or use the above food_list from assets
   const [food_list, setFoodlist] = useState([]);
   const url = "http://localhost:4000";
   const [token, setToken] = useState("");
-  const addtoCart = (itemId) => {
+  const addtoCart = async (itemId) => {
     if (!cartItems[itemId]) {
       setCartItems((prev) => ({ ...prev, [itemId]: 1 }));
     } else {
       setCartItems((prev) => {
         const updatedCart = { ...prev, [itemId]: prev[itemId] + 1 };
-        if (updatedCart[itemId] === 0) {
-          delete updatedCart[itemId];
-        }
         return updatedCart;
       });
     }
+    if (token) {
+      await axios.post(url+"/api/cart/add",{itemId},{headers:{token}})
+    }
   };
 
-  const removeFromCart = (itemId) => {
+  const removeFromCart = async (itemId) => {
     setCartItems((prev) => {
       const updatedCart = { ...prev, [itemId]: prev[itemId] - 1 };
       if (updatedCart[itemId] === 0) {
@@ -31,6 +32,9 @@ const StoreContextProvider = (props) => {
       }
       return updatedCart;
     });
+    if (token) {
+      await axios.post(url+"/api/cart/remove",{itemId},{headers:{token}})
+    }
   };
 
   const getTotalCartAmount = () => {
@@ -54,12 +58,18 @@ const StoreContextProvider = (props) => {
     }
   };
 
+  const loadCartData  = async (token) => {
+    const response = await axios.post(url+"/api/cart/get",{},{headers:{token}});
+    setCartItems(response.data.cartData);
+  }
+
   useEffect(() => {
     async function loadData() {
       await fetchFoodList();
 
       if (localStorage.getItem("token")) {
         setToken(localStorage.getItem("token"));
+        await loadCartData(localStorage.getItem("token"));
       }
     }
     loadData();
