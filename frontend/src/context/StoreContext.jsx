@@ -5,7 +5,7 @@ import { createContext, useEffect, useState } from "react";
 export const StoreContext = createContext(null);
 const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
-  console.log(cartItems);
+  // console.log(cartItems);
   // use this foodlist to get the data from the database or use the above food_list from assets
   const [food_list, setFoodlist] = useState([]);
   const url = "http://localhost:4000";
@@ -50,7 +50,7 @@ const StoreContextProvider = (props) => {
 
   const fetchFoodList = async () => {
     const response = await axios.get(url+"/api/food/list");
-    console.log(response);
+    // console.log(response);
     if (response.data.success) {
       setFoodlist(response.data.data);
     } else {
