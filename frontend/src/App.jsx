@@ -8,6 +8,7 @@ import Footer from "./components/Footer/Footer"
 import './App.css';
 import LoginPopup from "./components/LoginPopup/LoginPopup";
 import Loader from "./components/Loader/Loader";
+import Verify from "./pages/Verify/Verify";
 
 const App = () => {
   const [showLogin, setShowLogin] = useState(false);
@@ -17,7 +18,7 @@ const App = () => {
     // Simulate loading for 5 seconds
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 100);
+    }, 4000);
 
     return () => clearTimeout(timer); // Cleanup timer on unmount
   }, []);
@@ -36,6 +37,7 @@ const App = () => {
               <Route path="/" element={<Home />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/order" element={<PlaceOrder />} />
+              <Route path="/verify" element={<Verify />} />
             </Routes>
           </div><Footer /></>
       )}

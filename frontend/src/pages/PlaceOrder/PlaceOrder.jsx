@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import "./PlaceOrder.css";
 import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 const PlaceOrder = () => {
   const { getTotalCartAmount, token, food_list, cartItems, url } =
     useContext(StoreContext);
@@ -22,7 +23,6 @@ const PlaceOrder = () => {
     setData({ ...data, [event.target.name]: event.target.value });
   };
 
-  console.log(cartItems)
 
   const placeOrder = async (event) => {
     event.preventDefault();
@@ -33,8 +33,23 @@ const PlaceOrder = () => {
         itemInfo["quantity"] = cartItems[item._id];
         orderItems.push(itemInfo);
       }
-      console.log(orderItems)
     });
+    let orderData = {
+      address:data,
+      items:orderItems,
+      amount:getTotalCartAmount()+2,
+
+    }
+
+    let response = await axios.post(url+"/api/order/place",orderData,{headers:{token}});
+    console.log(response);
+    if (response.data.success){
+      const {session_url} = response.data;
+      window.location.replace(session_url);
+    }
+    else{
+      alert(response.data.message);
+    }
   };
 
   // console.log(data)
