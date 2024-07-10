@@ -8,7 +8,7 @@ const StoreContextProvider = (props) => {
   // console.log(cartItems);
   // use this foodlist to get the data from the database or use the above food_list from assets
   const [food_list, setFoodlist] = useState([]);
-  const url = "http://localhost:4000";
+  // const url = "http://localhost:4000";
   const [token, setToken] = useState("");
 
   const addtoCart = async (itemId) => {
@@ -21,7 +21,7 @@ const StoreContextProvider = (props) => {
       });
     }
     if (token) {
-      await fetch(`${url}/api/cart/add`, {
+      await fetch(`/api/cart/add`, {     // ${url}  removed from behind /api as vite.config is using a proxy server.
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ const StoreContextProvider = (props) => {
       return updatedCart;
     });
     if (token) {
-      await fetch(`${url}/api/cart/remove`, {
+      await fetch(`/api/cart/remove`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ const StoreContextProvider = (props) => {
   };
 
   const fetchFoodList = async () => {
-    const response = await fetch(`${url}/api/food/list`);
+    const response = await fetch(`/api/food/list`);
     const data = await response.json();
     if (data.success) {
       setFoodlist(data.data);
@@ -72,7 +72,7 @@ const StoreContextProvider = (props) => {
   };
 
   const loadCartData = async (token) => {
-    const response = await fetch(`${url}/api/cart/get`, {
+    const response = await fetch(`/api/cart/get`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
