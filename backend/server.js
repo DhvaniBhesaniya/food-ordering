@@ -42,7 +42,7 @@ const allowedOrigins = [
     },
     optionsSuccessStatus: 200
   };
-  app.
+
 
 
 // db connection
