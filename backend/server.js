@@ -6,6 +6,8 @@ import userRouter from "./routes/userRoute.js";
 import dotenv from "dotenv";
 import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
+import path from 'path';
+
 
 dotenv.config({path:'.env'}); // use this to use the path of .env if to run the server.js from backend folder 
 // dotenv.config({ path: '../.env' }); // use this to run from the root folder 
@@ -14,6 +16,10 @@ const port = process.env.PORT || 4001;
 
 // app config
 const app = express();
+
+
+const __dirname  = path.resolve();
+
 
 // middleware
 app.use(express.json());
@@ -28,6 +34,12 @@ app.use("/images", express.static('uploads'));
 app.use("/api/user", userRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
+
+
+app.use(express.static(path.join(__dirname, '/frontend/dist')));
+app.get('*',(req,res)=>{
+  res.sendFile(path.join(__dirname, 'frontend','dist','index.html'));
+})
 
 app.get("/test", (req, res) => {
     res.send("API working");
