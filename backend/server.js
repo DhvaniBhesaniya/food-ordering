@@ -7,8 +7,9 @@ import dotenv from "dotenv";
 import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 
-// dotenv.config({ path: '../.env' }); // use this to use the path of .env if to run the server.js from backend folder 
-dotenv.config();   // use this to run from the root folder
+dotenv.config({path:'.env'}); // use this to use the path of .env if to run the server.js from backend folder 
+// dotenv.config({ path: '../.env' }); // use this to run from the root folder 
+// dotenv.config();   // use this to run from the root folder
 const port = process.env.PORT || 4001;
 
 // app config
