@@ -25,23 +25,23 @@ const __dirname  = path.resolve();
 app.use(express.json());
 // app.use(cors());
 
-// List of allowed origins
-const allowedOrigins = [
-    'https://food-ordering-xaxd.onrender.com/', // Replace with your actual frontend domain
-    'http://localhost:5174' // Replace with other allowed origin(s)
-  ];
+// // List of allowed origins
+// const allowedOrigins = [
+//     'https://food-ordering-xaxd.onrender.com/', // Replace with your actual frontend domain
+//     'http://localhost:5174' // Replace with other allowed origin(s)
+//   ];
   
-  // Configure CORS to allow multiple origins
-  const corsOptions = {
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    optionsSuccessStatus: 200
-  };
+//   // Configure CORS to allow multiple origins
+//   const corsOptions = {
+//     origin: (origin, callback) => {
+//       if (!origin || allowedOrigins.includes(origin)) {
+//         callback(null, true);
+//       } else {
+//         callback(new Error('Not allowed by CORS'));
+//       }
+//     },
+//     optionsSuccessStatus: 200
+//   };
 
 
 
