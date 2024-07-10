@@ -10,8 +10,7 @@ const Cart = () => {
     food_list,
     getTotalCartAmount,
     removeFromCart,
-    token,
-    url
+    token
   } = useContext(StoreContext);
 
 useEffect(()=>{
@@ -31,6 +30,15 @@ useEffect(()=>{
 
   const isCheckoutDisabled = getTotalCartAmount() === 0;
 
+
+   // Determine the base URL for images based on environment
+   const baseUrl =
+   import.meta.env.VITE_DEV_PROD === "development"
+     ? import.meta.env.VITE_DEV_URL
+     : import.meta.env.VITE_PROD_URL;
+ 
+
+
   return (
     <div className="cart">
       <div className="cart-items">
@@ -49,7 +57,7 @@ useEffect(()=>{
             return (
               <div>
                 <div className="cart-item-title cart-items-item">
-                  <img src={url+"/images/"+item.image} alt="" />
+                  <img src={baseUrl+item.image} alt="" />
                   <p>{item.name}</p>
                   <p>${item.price}</p>
                   <p>{cartItems[item._id]}</p>

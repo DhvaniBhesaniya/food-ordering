@@ -5,11 +5,17 @@ import { StoreContext } from "../../context/StoreContext";
 
 const FoodItem = ({ id, name, price, description, image }) => {
   const { cartItems,addtoCart,removeFromCart,url} =useContext(StoreContext);
-  
+
+ // Determine the base URL for images based on environment
+ const baseUrl =
+ import.meta.env.VITE_DEV_PROD === "development"
+   ? import.meta.env.VITE_DEV_URL
+   : import.meta.env.VITE_PROD_URL;
+console.log(baseUrl);
   return (
     <div className="food-item">
       <div className="food-item-img-container">
-        <img className="food-item-image" src={url+"/images/"+image} alt="" />
+        <img className="food-item-image" src={baseUrl+image} alt="" />
         {!cartItems[id] ? (
           <img
             className="add"

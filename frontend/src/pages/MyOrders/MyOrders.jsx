@@ -1,17 +1,30 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./MyOrders.css";
 import { StoreContext } from "../../context/StoreContext";
-import axios from "axios";
+// import axios from "axios";
 import { assets } from "../../assets/frontend_assets/assets";
 const MyOrders = () => {
-  const { url, token } = useContext(StoreContext);
+  const { token } = useContext(StoreContext);
   const [data, setdata] = useState([]);
 
-  const fetchOrders = async () => {
-    const response = await axios.post(url+"/api/order/userorders",{},{headers:{token}});
-    setdata(response.data.data);
-      
+ const fetchOrders = async () => {
+  const response = await fetch("/api/order/userorders", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'token': token
+    },
+    body: JSON.stringify({})
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    setdata(data.data);
+  } else {
+    console.error('Error fetching orders:', response.statusText);
+  }
 };
+
 
 
   useEffect(() => {

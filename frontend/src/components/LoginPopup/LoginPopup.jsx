@@ -2,9 +2,9 @@ import React, { useContext, useEffect, useState } from "react";
 import "./LoginPopup.css";
 import { assets } from "../../assets/frontend_assets/assets";
 import { StoreContext } from "../../context/StoreContext";
-import axios from "axios"
+// import axios from "axios"
 const LoginPopup = ({ setShowLogin }) => {
-  const { url,setToken } = useContext(StoreContext);
+  const { setToken } = useContext(StoreContext);
   // const [token,setToken] = useState("");
 
   const [currState, setCurrState] = useState("Login");
@@ -23,7 +23,7 @@ const LoginPopup = ({ setShowLogin }) => {
 const onLogin = async (e) => {
 
   e.preventDefault()
-  let newUrl = url;
+  let newUrl = "";
   if (currState === "Login"){
     newUrl += "/api/user/login"
   }
@@ -31,21 +31,41 @@ const onLogin = async (e) => {
     newUrl += "/api/user/register"
   }
 
-  const response = await axios.post(newUrl,data);
-  if(response.data.success){
-    setToken(response.data.token);
-    localStorage.setItem("token",response.data.token);
-    setCurrState("Login");
-    setData({
-      name: "",
-      email: "",
-      password: "",
-    });
-    setShowLogin(false);
-  }
-  else{
-    alert(response.data.message)
-  }
+  const handleLogin = async () => {
+    try {
+      const response = await fetch(newUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      });
+  
+      if (response.ok) {
+        const responseData = await response.json();
+        if (responseData.success) {
+          setToken(responseData.token);
+          localStorage.setItem("token", responseData.token);
+          setCurrState("Login");
+          setData({
+            name: "",
+            email: "",
+            password: "",
+          });
+          setShowLogin(false);
+        } else {
+          alert(responseData.message);
+        }
+      } else {
+        console.error('Failed to login:', response.statusText);
+        // Handle error as needed
+      }
+    } catch (error) {
+      console.error('Error logging in:', error);
+      // Handle network or other errors
+    }
+  };
+  
 }
 
   // to make the screen unscrollable at the time of logn pop up is on.

@@ -2,9 +2,9 @@ import React, { useContext, useEffect, useState } from "react";
 import "./PlaceOrder.css";
 import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+// import axios from "axios";
 const PlaceOrder = () => {
-  const { getTotalCartAmount, token, food_list, cartItems, url } =
+  const { getTotalCartAmount, token, food_list, cartItems } =
     useContext(StoreContext);
   const navigate = useNavigate();
 
@@ -41,15 +41,37 @@ const PlaceOrder = () => {
 
     }
 
-    let response = await axios.post(url+"/api/order/place",orderData,{headers:{token}});
-    console.log(response);
-    if (response.data.success){
-      const {session_url} = response.data;
-      window.location.replace(session_url);
-    }
-    else{
-      alert(response.data.message);
-    }
+    const placeOrder = async () => {
+      try {
+        let response = await fetch(`${url}/api/order/place`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'token': token
+          },
+          body: JSON.stringify(orderData)
+        });
+    
+        if (response.ok) {
+          let data = await response.json();
+          console.log(data);
+    
+          if (data.success) {
+            const { session_url } = data;
+            window.location.replace(session_url);
+          } else {
+            alert(data.message);
+          }
+        } else {
+          console.error('Error placing order:', response.statusText);
+          alert('Error placing order');
+        }
+      } catch (error) {
+        console.error('Network error:', error);
+        alert('Network error occurred');
+      }
+    };
+    
   };
 
   // console.log(data)
