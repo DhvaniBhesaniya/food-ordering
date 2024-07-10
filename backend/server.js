@@ -23,7 +23,27 @@ const __dirname  = path.resolve();
 
 // middleware
 app.use(express.json());
-app.use(cors());
+// app.use(cors());
+
+// List of allowed origins
+const allowedOrigins = [
+    'https://food-ordering-xaxd.onrender.com/', // Replace with your actual frontend domain
+    'http://localhost:5174' // Replace with other allowed origin(s)
+  ];
+  
+  // Configure CORS to allow multiple origins
+  const corsOptions = {
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    optionsSuccessStatus: 200
+  };
+  app.
+
 
 // db connection
 connectDB();
