@@ -15,26 +15,26 @@ Whether you're having a cozy night in, hosting a gathering with friends, or simp
 
 Join us in indulging in the joy of good food delivered right to your doorstep! 🚪✨
 
-![Screenshot from 2024-04-21 18-52-45](https://github.com/Vaibhav-kesarwani/Food-delivery-website/assets/116189379/2c90e092-13cc-4cb2-8105-2664cca094e7)
+![image](https://github.com/DhvaniBhesaniya/food-ordering/blob/old-code/frontend/public/screenshot-1.png)
 
 <hr />
 
-![Screenshot from 2024-04-21 19-03-30](https://github.com/Vaibhav-kesarwani/Food-delivery-website/assets/116189379/90733faa-7d31-4338-9af1-302f0d928b3b)
+![image](https://github.com/DhvaniBhesaniya/food-ordering/blob/old-code/frontend/public/screenshot-2.png)
 
 ## Prerequisites
 
 ### Install Node JS
 Refer to https://nodejs.org/en/ to install nodejs
 
-### Install create-react-app
-Install create-react-app npm package globally. This will help to easily run the project and also build the source files easily. Use the following command to install create-react-app
+### Install via vite
+Setup the projectct of frontend and backend  using vite@latest. This will help to easily run the project and also build the source files easily. Use the following command to start the project.
 
 ```bash
-npm install -g create-react-app
+npm create vite@lateest
 ```
 ## Live Application URL
 
-The Application is deployed in https://food-delivery-website-hazel.vercel.app/
+The Application is deployed in "not deployed yet"
 
 Click on the link to see the application
 
@@ -57,9 +57,6 @@ npm run dev
 The Application Runs on **localhost:5173**
 
 ## Resources
-
-**create-react-app** : The following link has all the commands that can be used with create-react-app
-https://github.com/facebook/create-react-app
 
 **ReactJS** : Refer to https://reactjs.org/ to understand the concepts of ReactJS
 
