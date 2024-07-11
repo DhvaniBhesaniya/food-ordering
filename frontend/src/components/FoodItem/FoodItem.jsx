@@ -11,7 +11,7 @@ const FoodItem = ({ id, name, price, description, image }) => {
  import.meta.env.VITE_DEV_PROD === "development"
    ? import.meta.env.VITE_DEV_URL
    : import.meta.env.VITE_PROD_URL;
-console.log(baseUrl);
+
   return (
     <div className="food-item">
       <div className="food-item-img-container">
