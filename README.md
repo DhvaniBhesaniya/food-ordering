@@ -15,11 +15,11 @@ Whether you're having a cozy night in, hosting a gathering with friends, or simp
 
 Join us in indulging in the joy of good food delivered right to your doorstep! 🚪✨
 
-![image](https://github.com/DhvaniBhesaniya/food-ordering/blob/old-code/frontend/public/screenshot-1.png)
+![image](https://github.com/DhvaniBhesaniya/food-ordering/blob/phase-1/frontend/public/screenshot-1.png)
 
 <hr />
 
-![image](https://github.com/DhvaniBhesaniya/food-ordering/blob/old-code/frontend/public/screenshot-2.png)
+![image](https://github.com/DhvaniBhesaniya/food-ordering/blob/phase-1/frontend/public/screenshot-2.png)
 
 ## Prerequisites
 
