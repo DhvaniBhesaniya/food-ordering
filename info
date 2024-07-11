@@ -78,4 +78,20 @@ then do run npm i  in backend  admin and frontend folder.
 .env
 JWT_SECRET="random#secret"
 STRIPE_SECRET_KEY="sk_test_51PZ54HRtqMxXmkr4Q3MA0jg5H0k06yQJ5y9e1Ch1we6smsALhrKGNAH7X4kfhJohswoDwzlYar1hfvxtEJWGJKTX00XZdafYL2"
+PORT=4000                                               
+VITE_DEV_PROD="development"
+............................................................
+
+
+
+# Step 1: Create or switch to the old-code branch
+git checkout -b old-code  # If the branch does not exist
+# or
+git checkout old-code  # If the branch already exists
+
+# Step 2: Reset the old-code branch to the specific commit
+git reset --hard 32cbf410e11bbdf7d32f5a8a776802e28d1d5b2d
+
+# Step 3: Push the old-code branch to the remote repository (if needed)
+git push origin old-code --force
 ............................................................
