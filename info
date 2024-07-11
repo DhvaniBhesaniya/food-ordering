@@ -94,4 +94,21 @@ git reset --hard 32cbf410e11bbdf7d32f5a8a776802e28d1d5b2d
 
 # Step 3: Push the old-code branch to the remote repository (if needed)
 git push origin old-code --force
+
+
+
+
+# Step 1: Ensure you are on the branch to be renamed
+git checkout old-code
+
+# Step 2: Rename the branch locally
+git branch -m old-phase-1
+
+# Step 3: Delete the old branch name on the remote (if it exists)
+git push origin --delete old-code
+
+# Step 4: Push the renamed branch to the remote and set the upstream
+git push origin old-phase-1
+git push --set-upstream origin old-phase-1
+
 ............................................................
