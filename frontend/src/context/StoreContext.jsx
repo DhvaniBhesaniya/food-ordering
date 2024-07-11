@@ -5,7 +5,7 @@ import { createContext, useEffect, useState } from "react";
 export const StoreContext = createContext(null);
 const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
-  // console.log(cartItems);
+  console.log(cartItems); 
   // use this foodlist to get the data from the database or use the above food_list from assets
   const [food_list, setFoodlist] = useState([]);
   const url = "http://localhost:4000";
