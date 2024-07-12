@@ -2,11 +2,9 @@ import React, { useContext, useEffect, useState } from "react";
 import "./LoginPopup.css";
 import { assets } from "../../assets/frontend_assets/assets";
 import { StoreContext } from "../../context/StoreContext";
-// import axios from "axios"
+
 const LoginPopup = ({ setShowLogin }) => {
   const { setToken } = useContext(StoreContext);
-  // const [token,setToken] = useState("");
-
   const [currState, setCurrState] = useState("Login");
   const [data, setData] = useState({
     name: "",
@@ -20,18 +18,7 @@ const LoginPopup = ({ setShowLogin }) => {
     setData((data) => ({ ...data, [name]: value }));
   };
 
-const onLogin = async (e) => {
-
-  e.preventDefault()
-  let newUrl = "";
-  if (currState === "Login"){
-    newUrl += "/api/user/login"
-  }
-  else{
-    newUrl += "/api/user/register"
-  }
-
-  const handleLogin = async () => {
+  const handleLogin = async (newUrl) => {
     try {
       const response = await fetch(newUrl, {
         method: 'POST',
@@ -40,7 +27,7 @@ const onLogin = async (e) => {
         },
         body: JSON.stringify(data)
       });
-  
+
       if (response.ok) {
         const responseData = await response.json();
         if (responseData.success) {
@@ -58,17 +45,23 @@ const onLogin = async (e) => {
         }
       } else {
         console.error('Failed to login:', response.statusText);
-        // Handle error as needed
       }
     } catch (error) {
       console.error('Error logging in:', error);
-      // Handle network or other errors
     }
   };
-  
-}
 
-  // to make the screen unscrollable at the time of logn pop up is on.
+  const onLogin = async (e) => {
+    e.preventDefault();
+    let newUrl = "";
+    if (currState === "Login") {
+      newUrl += "/api/user/login";
+    } else {
+      newUrl += "/api/user/register";
+    }
+    await handleLogin(newUrl);
+  };
+
   useEffect(() => {
     document.body.style.overflow = "hidden";
 
@@ -79,7 +72,7 @@ const onLogin = async (e) => {
 
   return (
     <div className="login-popup">
-      <form onSubmit={onLogin} action="" className="login-popup-container">
+      <form onSubmit={onLogin} className="login-popup-container">
         <div className="login-popup-title">
           <h2>{currState}</h2>
           <img
@@ -126,7 +119,7 @@ const onLogin = async (e) => {
             <>
               <input type="checkbox" required />
               <p>
-                By continuing, i aggree to the terms of use & privacy policy.
+                By continuing, I agree to the terms of use & privacy policy.
               </p>
             </>
           )}
@@ -138,7 +131,7 @@ const onLogin = async (e) => {
           </p>
         ) : (
           <p>
-            Alreqady have an account ?{" "}
+            Already have an account?{" "}
             <span onClick={() => setCurrState("Login")}>Login here</span>
           </p>
         )}

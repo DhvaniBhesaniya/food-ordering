@@ -1,8 +1,12 @@
 import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
 import Stripe from "stripe";
+import dotenv from "dotenv";
 
+
+dotenv.config({path:'.env'}); 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
 
 // placing the order for frontend
 const placeOrder = async (req, res) => {
@@ -48,6 +52,7 @@ const placeOrder = async (req, res) => {
     });
     res.json({ success: true, session_url: session.url });
   } catch (error) {
+    // console.log(error); 
     res.json({ success: false, message: "Error...." });
   }
 };

@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from "react";
 import "./Cart.css";
 import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
+import getBaseUrl from "../../../config/config";
 
 const Cart = () => {
   const {
@@ -31,12 +32,9 @@ useEffect(()=>{
   const isCheckoutDisabled = getTotalCartAmount() === 0;
 
 
-   // Determine the base URL for images based on environment
-   const baseUrl =
-   import.meta.env.VITE_DEV_PROD === "development"
-     ? import.meta.env.VITE_DEV_URL
-     : import.meta.env.VITE_PROD_URL;
- 
+  // Determine the base URL for images based on environment
+  const baseUrl = getBaseUrl();
+  // console.log(baseUrl);
 
 
   return (
@@ -57,7 +55,7 @@ useEffect(()=>{
             return (
               <div>
                 <div className="cart-item-title cart-items-item">
-                  <img src={baseUrl+item.image} alt="" />
+                  <img src={baseUrl+"/images/"+item.image} alt="" />
                   <p>{item.name}</p>
                   <p>${item.price}</p>
                   <p>{cartItems[item._id]}</p>

@@ -2,20 +2,20 @@ import React, { useContext } from "react";
 import "./FoodItem.css";
 import { assets } from "../../assets/frontend_assets/assets";
 import { StoreContext } from "../../context/StoreContext";
+import getBaseUrl from "../../../config/config";
 
 const FoodItem = ({ id, name, price, description, image }) => {
-  const { cartItems,addtoCart,removeFromCart,url} =useContext(StoreContext);
+  const { cartItems, addtoCart, removeFromCart } = useContext(StoreContext);
 
- // Determine the base URL for images based on environment
- const baseUrl =
- import.meta.env.VITE_DEV_PROD === "development"
-   ? import.meta.env.VITE_DEV_URL
-   : import.meta.env.VITE_PROD_URL;
+   // Determine the base URL for images based on environment
+  const baseUrl = getBaseUrl();
+
+  //  console.log(baseUrl);
 
   return (
     <div className="food-item">
       <div className="food-item-img-container">
-        <img className="food-item-image" src={baseUrl+image} alt="" />
+        <img className="food-item-image" src={`${baseUrl}/images/${image}`}  alt="" />
         {!cartItems[id] ? (
           <img
             className="add"
@@ -44,14 +44,15 @@ const FoodItem = ({ id, name, price, description, image }) => {
           <p>{name}</p>
           <img src={assets.rating_starts} alt="" />
         </div>
-        <p className="food-item-desc"> {description}</p>
-        <p className="food-item-price"> ${price}</p>
+        <p className="food-item-desc">{description}</p>
+        <p className="food-item-price">${price}</p>
       </div>
     </div>
   );
 };
 
 export default FoodItem;
+
 
 
 

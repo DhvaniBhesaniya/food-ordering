@@ -9,7 +9,7 @@ import orderRouter from "./routes/orderRoute.js";
 import path from 'path';
 
 
-dotenv.config({path:'.env'}); // use this to use the path of .env if to run the server.js from backend folder 
+dotenv.config({path:'.env'}); // use this to use the path of .env if to run the server.js from root folder 
 // dotenv.config({ path: '../.env' }); // use this to run from the root folder 
 // dotenv.config();   // use this to run from the root folder
 const port = process.env.PORT || 4001;

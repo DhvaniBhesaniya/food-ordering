@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import "./PlaceOrder.css";
 import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
-// import axios from "axios";
+
 const PlaceOrder = () => {
   const { getTotalCartAmount, token, food_list, cartItems } =
     useContext(StoreContext);
@@ -19,10 +19,10 @@ const PlaceOrder = () => {
     country: "",
     phone: "",
   });
+
   const onChangeHandler = (event) => {
     setData({ ...data, [event.target.name]: event.target.value });
   };
-
 
   const placeOrder = async (event) => {
     event.preventDefault();
@@ -35,51 +35,46 @@ const PlaceOrder = () => {
       }
     });
     let orderData = {
-      address:data,
-      items:orderItems,
-      amount:getTotalCartAmount()+2,
-
-    }
-
-    const placeOrder = async () => {
-      try {
-        let response = await fetch(`${url}/api/order/place`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'token': token
-          },
-          body: JSON.stringify(orderData)
-        });
-    
-        if (response.ok) {
-          let data = await response.json();
-          console.log(data);
-    
-          if (data.success) {
-            const { session_url } = data;
-            window.location.replace(session_url);
-          } else {
-            alert(data.message);
-          }
-        } else {
-          console.error('Error placing order:', response.statusText);
-          alert('Error placing order');
-        }
-      } catch (error) {
-        console.error('Network error:', error);
-        alert('Network error occurred');
-      }
+      address: data,
+      items: orderItems,
+      amount: getTotalCartAmount() + 2,
     };
-    
+
+    try {
+      let response = await fetch(`/api/order/place`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          token: token,
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      if (response.ok) {
+        let data = await response.json();
+        console.log(data);
+
+        if (data.success) {
+          const { session_url } = data;
+          window.location.replace(session_url);
+        } else {
+          alert(data.message);
+        }
+      } else {
+        console.error("Error placing order:", response.statusText);
+        alert("Error placing order");
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+      alert("Network error occurred");
+    }
   };
 
-  // console.log(data)
   useEffect(() => {
-    if (getTotalCartAmount() == 0) {
+    if (getTotalCartAmount() === 0) {
       navigate("/");
     }
-  });
+  }, [getTotalCartAmount, navigate]);
 
   return (
     <form onSubmit={placeOrder} className="place-order">
@@ -91,7 +86,7 @@ const PlaceOrder = () => {
             onChange={onChangeHandler}
             value={data.firstName}
             type="text"
-            placeholder=" First Name "
+            placeholder="First Name"
             required
           />
           <input
@@ -99,7 +94,7 @@ const PlaceOrder = () => {
             onChange={onChangeHandler}
             value={data.lastName}
             type="text"
-            placeholder=" Last Name"
+            placeholder="Last Name"
             required
           />
         </div>
@@ -107,8 +102,8 @@ const PlaceOrder = () => {
           name="email"
           onChange={onChangeHandler}
           value={data.email}
-          type="text"
-          placeholder=" email Address"
+          type="email"
+          placeholder="Email Address"
           required
         />
         <input
@@ -116,7 +111,7 @@ const PlaceOrder = () => {
           onChange={onChangeHandler}
           value={data.street}
           type="text"
-          placeholder=" Street"
+          placeholder="Street"
           required
         />
         <div className="multi-fields">
@@ -125,7 +120,7 @@ const PlaceOrder = () => {
             onChange={onChangeHandler}
             value={data.city}
             type="text"
-            placeholder=" City "
+            placeholder="City"
             required
           />
           <input
@@ -133,7 +128,7 @@ const PlaceOrder = () => {
             onChange={onChangeHandler}
             value={data.state}
             type="text"
-            placeholder=" State"
+            placeholder="State"
             required
           />
         </div>
@@ -143,7 +138,7 @@ const PlaceOrder = () => {
             onChange={onChangeHandler}
             value={data.zipCode}
             type="text"
-            placeholder=" Zip Code "
+            placeholder="Zip Code"
             required
           />
           <input
@@ -151,7 +146,7 @@ const PlaceOrder = () => {
             onChange={onChangeHandler}
             value={data.country}
             type="text"
-            placeholder=" Country"
+            placeholder="Country"
             required
           />
         </div>
@@ -160,7 +155,7 @@ const PlaceOrder = () => {
           onChange={onChangeHandler}
           value={data.phone}
           type="text"
-          placeholder=" phone "
+          placeholder="Phone"
           required
         />
       </div>
@@ -174,18 +169,16 @@ const PlaceOrder = () => {
             </div>
             <hr />
             <div className="cart-total-details">
-              <p>Deliver Fee</p>
+              <p>Delivery Fee</p>
               <p>${getTotalCartAmount() === 0 ? 0 : 2}</p>
             </div>
             <hr />
             <div className="cart-total-details">
               <p>Total</p>
-              <b>
-                ${getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + 2}
-              </b>
+              <b>${getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + 2}</b>
             </div>
           </div>
-          <button type="submit"> PROCEED TO PAYMENT</button>
+          <button type="submit">PROCEED TO PAYMENT</button>
         </div>
       </div>
     </form>
