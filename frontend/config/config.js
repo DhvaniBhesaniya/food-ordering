@@ -1,7 +1,7 @@
 // config.js
 
 const getBaseUrl = () => {
-    let env = "production"; // for local running.
+    let env = "development"; // for local running.
     // let env = "production"; // for production running.
     
     if (env === 'development') {

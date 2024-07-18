@@ -1,21 +1,42 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./FoodItem.css";
 import { assets } from "../../assets/frontend_assets/assets";
 import { StoreContext } from "../../context/StoreContext";
-import getBaseUrl from "../../../config/config";
+// import getBaseUrl from "../../../config/config";
 
 const FoodItem = ({ id, name, price, description, image }) => {
-  const { cartItems, addtoCart, removeFromCart } = useContext(StoreContext);
+  const { cartItems, addtoCart, removeFromCart, inputUpdateCart } =
+    useContext(StoreContext);
+  const [inputValue, setInputValue] = useState(cartItems[id] || 0);
 
-   // Determine the base URL for images based on environment
-  const baseUrl = getBaseUrl();
+  useEffect(() => {
+    setInputValue(cartItems[id] ? cartItems[id].toString() : '');
+  }, [cartItems, id]);
 
-  //  console.log(baseUrl);
+  const handleInputChange = (e) => {
+    const newValue = e.target.value;
+    setInputValue(newValue);
+    
+    // if try to empty the cardid number set it to one
+    if (newValue === '') {
+      inputUpdateCart(id, 1);
+    } else {
+      const numValue = parseInt(newValue, 10);
+      if (!isNaN(numValue) && numValue >= 0) {
+        inputUpdateCart(id, numValue);
+      }
+    }
+  };
+
+  // Determine the base URL for images based on environment
+  // const baseUrl = getBaseUrl();
+
+  //  console.log(cartItems[id]);
 
   return (
     <div className="food-item">
       <div className="food-item-img-container">
-        <img className="food-item-image" src={`${baseUrl}/images/${image}`}  alt="" />
+        <img className="food-item-image" src={`/images/${image}`} alt="" />
         {!cartItems[id] ? (
           <img
             className="add"
@@ -30,7 +51,12 @@ const FoodItem = ({ id, name, price, description, image }) => {
               src={assets.remove_icon_red}
               alt=""
             />
-            <p>{cartItems[id]}</p>
+            {/* <p>{cartItems[id]}</p> */}
+            <input
+              type="text"
+              value={inputValue}
+              onChange={handleInputChange}
+            />
             <img
               onClick={() => addtoCart(id)}
               src={assets.add_icon_green}
@@ -52,10 +78,6 @@ const FoodItem = ({ id, name, price, description, image }) => {
 };
 
 export default FoodItem;
-
-
-
-
 
 // import React, { useContext } from "react";
 // import "./FoodItem.css";

@@ -66,7 +66,26 @@
 width: 30px;
 cursor: pointer;
 }
+/* Hide the arrows of the input type number (which shows inside the input box to inc and dec the number) for Chrome, Safari, Edge, and Opera */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
 
+.food-item-counter input {
+    width: 16px; /* Adjust width as needed */
+    height: 30px; /* Adjust height to make it look better */
+    border: none;
+    text-align: center;
+    font-size: 16px; /* Adjust font size for better readability */
+   
+  }
+  /* Remove border and outline on focus */
+.food-item-counter input:focus {
+    border: none;
+    outline: none;
+}
 
 
 

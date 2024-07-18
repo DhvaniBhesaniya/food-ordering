@@ -20,20 +20,37 @@ const addToCart = async (req, res) => {
 
 // remove items from users cart
 const removeFromCart = async (req, res) => {
-    try {
-        let userData = await userModel.findById(req.body.userId);
-        let cartData = await userData.cartData;
-        if (cartData[req.body.itemId] > 0) {
-            cartData[req.body.itemId] -= 1;
-        }
-        if (cartData[req.body.itemId] === 0) {
-            delete cartData[req.body.itemId];
-        }
-        await userModel.findByIdAndUpdate(req.body.userId, { cartData });
-        res.json({ success: true, message: "item removed from cart" });
-    } catch (error) {
-        res.json({ success: false, message: "unable to remove" });
+  try {
+    let userData = await userModel.findById(req.body.userId);
+    let cartData = await userData.cartData;
+    if (cartData[req.body.itemId] > 0) {
+      cartData[req.body.itemId] -= 1;
     }
+    if (cartData[req.body.itemId] === 0) {
+      delete cartData[req.body.itemId];
+    }
+    await userModel.findByIdAndUpdate(req.body.userId, { cartData });
+    res.json({ success: true, message: "item removed from cart" });
+  } catch (error) {
+    res.json({ success: false, message: "unable to remove" });
+  }
+};
+
+// update the item of the cart
+const updateCart = async (req, res) => {
+  try {
+    let userData = await userModel.findById(req.body.userId);
+    let cartData = await userData.cartData;
+    if (cartData[req.body.quantity] === 0) {
+      delete cartData[req.body.itemId];
+    } else {
+      cartData[req.body.itemId] = req.body.quantity;
+    }
+    await userModel.findByIdAndUpdate(req.body.userId, { cartData });
+    res.json({ success: true, message: "item updated in cart" });
+  } catch (error) {
+    res.json({ success: false, message: "unable to update" });
+  }
 };
 
 // fetch user cart data
@@ -47,4 +64,4 @@ const getCart = async (req, res) => {
   }
 };
 
-export { addToCart, removeFromCart, getCart };
+export { addToCart, removeFromCart, getCart,updateCart };

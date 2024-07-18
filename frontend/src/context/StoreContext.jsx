@@ -52,6 +52,26 @@ const StoreContextProvider = (props) => {
     }
   };
 
+  const inputUpdateCart = async (itemId, itemIdValue) => {
+    setCartItems((prev) => {
+      const updatedCart = { ...prev, [itemId]: itemIdValue };
+      if (updatedCart[itemId] === 0) {
+        delete updatedCart[itemId];
+      }
+      return updatedCart;
+    });
+    if (token) {
+      await fetch(`/api/cart/update`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token
+        },
+        body: JSON.stringify({ itemId, quantity: itemIdValue })
+      });
+    }
+  };
+
   const getTotalCartAmount = () => {
     let totalAmount = 0;
     for (const item in cartItems) {
@@ -66,6 +86,7 @@ const StoreContextProvider = (props) => {
     const data = await response.json();
     if (data.success) {
       setFoodlist(data.data);
+      // console.log(data.data);
     } else {
       console.error(data.message);
     }
@@ -102,6 +123,7 @@ const StoreContextProvider = (props) => {
     setCartItems,
     addtoCart,
     removeFromCart,
+    inputUpdateCart,
     getTotalCartAmount,
     token,
     setToken,
