@@ -3,10 +3,8 @@ import userModel from "../models/userModel.js";
 import Stripe from "stripe";
 import dotenv from "dotenv";
 
-
-dotenv.config({path:'.env'}); 
+dotenv.config({ path: ".env" });
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
 
 // placing the order for frontend
 const placeOrder = async (req, res) => {
@@ -52,7 +50,7 @@ const placeOrder = async (req, res) => {
     });
     res.json({ success: true, session_url: session.url });
   } catch (error) {
-    // console.log(error); 
+    // console.log(error);
     res.json({ success: false, message: "Error...." });
   }
 };
@@ -73,15 +71,37 @@ const verifyOrder = async (req, res) => {
   }
 };
 
-
 // user order for frontend
 const userOrder = async (req, res) => {
   try {
-    const userOrders = await orderModel.find({ userId: req.body.userId });
+    let userOrders = await orderModel.find({ userId: req.body.userId });
+    // only get the orders whose status  is not equal to Delivered
+    userOrders = userOrders.filter((order) => order.status !== "Delivered");
     res.json({ success: true, data: userOrders });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error });
+  }
+};
+
+// user order history
+const userHistoryOrder = async (req, res) => {
+  try {
+    const user = await userModel
+      .findById(req.body.userId)
+      .populate("orderHistory")
+      .exec();
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    res.json({ success: true, data: user.orderHistory });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -96,18 +116,67 @@ const listOrders = async (req, res) => {
   }
 };
 
-
 //api for updating order status from admin side.
-const updateStatus = async (req,res) => {
+const updateStatus = async (req, res) => {
   try {
-    const order = await orderModel.findByIdAndUpdate(req.body.orderId,{status:req.body.status});
-    res.json({success:true,data:"Status updated..."})
+    const { orderId, status } = req.body;
+
+    // Update the order status
+    const updatedOrder = await orderModel.findByIdAndUpdate(orderId, {
+      status: status,
+    });
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // If the status is "Delivered", move the order to user's orderHistory
+    if (status === "Delivered") {
+      const user = await userModel.findById(updatedOrder.userId);
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Add the order to user's orderHistory if it doesn't already exist
+      if (!user.orderHistory.includes(updatedOrder._id)) {
+        user.orderHistory.push(updatedOrder._id);
+        await user.save();
+      } else {
+        console.log("Order already exists in user's orderHistory");
+      }
+
+      // // Remove the order from the orderModel
+      // await orderModel.findByIdAndDelete(orderId);
+
+      return res
+        .status(200)
+        .json({ message: "Order delivered and moved to user's history" });
+    }
+
+    res.status(200).json(updatedOrder);
   } catch (error) {
-    console.log(error);
-    res.json({success:false,message:"Error while updating status..."})
+    console.error("Error updating order status:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
+};
+// //api for updating order status from admin side.
+// const updateStatus = async (req,res) => {
+//   try {
+//     const order = await orderModel.findByIdAndUpdate(req.body.orderId,{status:req.body.status});
+//     res.json({success:true,data:"Status updated..."})
+//   } catch (error) {
+//     console.log(error);
+//     res.json({success:false,message:"Error while updating status..."})
+//   }
 
-}
+// }
 
-
-export { placeOrder, verifyOrder, userOrder, listOrders, updateStatus };
+export {
+  placeOrder,
+  verifyOrder,
+  userOrder,
+  userHistoryOrder,
+  listOrders,
+  updateStatus,
+};

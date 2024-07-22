@@ -1,0 +1,60 @@
+.cancel-button {
+  font-family: inherit;
+  font-size: 20px;
+  background: #ff342b;
+  color: white;
+  padding-left: 0.5em;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border: none;
+  border-radius: 15px;
+  font-weight: 1000;
+  width: 130px;
+}
+
+.cancel-button span {
+  display: block;
+  margin-left: 0.3em;
+  transition: all 0.3s ease-in-out;
+}
+
+.cancel-button svg {
+  display: block;
+  transform-origin: center center;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Style for the SVG lines */
+.cancel-button svg line {
+  stroke: rgb(155, 153, 153);
+  stroke-width: 2;
+  transition: stroke 0.3s ease-in-out;
+}
+
+.cancel-button:hover {
+  background: #e52e26;
+}
+
+.cancel-button:hover .svgWrapper {
+  transform: scale(1.25);
+  transition: 0.5s linear;
+}
+
+.cancel-button:hover svg {
+  transform: translateX(1.6em) scale(1.1);   /* here this translateX  make the x mark go from left to right.*/
+}
+
+/* Change line color to white on hover */
+.cancel-button:hover svg line {
+  stroke: white;
+}
+
+.cancel-button:hover span {
+  opacity: 0;
+  transition: 0.5s linear;
+}
+
+.cancel-button:active {
+  transform: scale(0.95);
+}
