@@ -1,9 +1,9 @@
 import React from "react";
 import "./CancelButton.css";
 
-const CancelButton = () => {
+const CancelButton = ({ onClick }) => {
   return (
-    <button className="cancel-button">
+    <button className="cancel-button" onClick={onClick}>
       <div className="svgWrapper1">
         <div className="svgWrapper">
           <svg

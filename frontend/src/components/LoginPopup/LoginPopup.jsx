@@ -4,7 +4,7 @@ import { assets } from "../../assets/frontend_assets/assets";
 import { StoreContext } from "../../context/StoreContext";
 
 const LoginPopup = ({ setShowLogin }) => {
-  const { setToken } = useContext(StoreContext);
+  const { setToken,getUserData } = useContext(StoreContext);
   const [currState, setCurrState] = useState("Login");
   const [data, setData] = useState({
     name: "",
@@ -39,6 +39,7 @@ const LoginPopup = ({ setShowLogin }) => {
             email: "",
             password: "",
           });
+          getUserData(responseData.token);
           setShowLogin(false);
         } else {
           alert(responseData.message);

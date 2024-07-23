@@ -1,9 +1,9 @@
 import React from 'react';
 import "./SaveButton.css";
 
-const SaveButton = () => {
+const SaveButton = ({ onClick }) => {
   return (
-    <button className="button">
+    <button className="button" onClick={onClick}>
       <div className="svgWrapper1">
         <div className="svgWrapper">
           <svg

@@ -27,7 +27,6 @@ const loginUser = async (req, res) => {
 };
 
 const createToken = (id) => {
-  
   const token = jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: "24h",
   });
@@ -38,12 +37,13 @@ const createToken = (id) => {
 const registerUser = async (req, res) => {
   const { name, password, email } = req.body;
   try {
-    // checking if user exist or not.
+    // Checking if the user already exists
     const exists = await userModel.findOne({ email });
     if (exists) {
       return res.json({ success: false, message: "User already exists" });
     }
-    // validating email format & strong password
+
+    // Validating email format & strong password
     if (!validator.isEmail(email)) {
       return res.json({
         success: false,
@@ -57,12 +57,24 @@ const registerUser = async (req, res) => {
       });
     }
 
-    // hashing user password
-
+    // Hashing the user's password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Generating a dynamic customer ID
+    const lastUser = await userModel.findOne().sort({ createdAt: -1 });
+    let customerId;
+    if (lastUser && lastUser.customerId) {
+      const lastCustomerNumber = parseInt(
+        lastUser.customerId.replace("#Customer", "")
+      );
+      customerId = `#Customer${lastCustomerNumber + 1}`;
+    } else {
+      customerId = "#Customer1";
+    }
+
     const newUser = new userModel({
+      customerId,
       name,
       password: hashedPassword,
       email,
@@ -76,8 +88,69 @@ const registerUser = async (req, res) => {
       token,
     });
   } catch (error) {
-    res.json({ success: false, message: error });
+    res.json({ success: false, message: error.message });
   }
 };
 
-export { loginUser, registerUser };
+const getUserData = async (req, res) => {
+  try {
+    // Extract token from headers
+    const token = req.headers.token;
+
+    // Verify and decode token
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Extract user ID from decoded token
+    const userId = decodedToken.id;
+
+    // Find user by ID
+    const user = await userModel.findById(userId);
+
+    res.json({ success: true, data: user });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+const updateUserData = async (req, res) => {
+  const { name, email, phoneNumber, currentPassword, newPassword } = req.body;
+  
+  try {
+    // extracting user id from token
+    const token = req.headers.token;
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decodedToken.id;
+
+    // Find the user by ID
+    const user = await userModel.findById(userId);
+
+    // Check if the current password and the new password are given
+    if (currentPassword && newPassword) {
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        return res.json({ success: false, message: 'Current password is incorrect' });
+      }
+
+      // Hash the new password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+      // Update the user with the new password
+      user.password = hashedPassword;
+    }
+
+    // Update the user details
+    if (name) user.name = name;
+    if (email) user.email = email;
+    // if (phoneNumber) user.phoneNumber = phoneNumber;
+
+    // Save the updated user
+    await user.save();
+
+    res.json({ success: true, message: 'User details updated successfully' });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export { loginUser, registerUser, getUserData, updateUserData };

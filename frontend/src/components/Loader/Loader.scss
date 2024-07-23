@@ -29,7 +29,7 @@ $drop-color-t: hsl(223, 10%, 70%, 0);
   &__pan,
   &__ring,
   &__shadow {
-    animation: pan 2s $ease-in-out infinite;
+    animation: pan 2s $ease-in-out infinite;    //  to fast or slow the animation  change this.
   }
 
   &__drop {
