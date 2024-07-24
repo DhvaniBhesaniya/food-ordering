@@ -68,9 +68,9 @@ const registerUser = async (req, res) => {
       const lastCustomerNumber = parseInt(
         lastUser.customerId.replace("#Customer", "")
       );
-      customerId = `#Customer${lastCustomerNumber + 1}`;
+      customerId = `Customer${lastCustomerNumber + 1}`;
     } else {
-      customerId = "#Customer1";
+      customerId = "Customer1";
     }
 
     const newUser = new userModel({
@@ -143,6 +143,11 @@ const updateUserData = async (req, res) => {
     if (name) user.name = name;
     if (email) user.email = email;
     // if (phoneNumber) user.phoneNumber = phoneNumber;
+
+     // Update the profile image if provided
+     if (req.file) {
+      user.profileImg = req.file.originalname;
+    }
 
     // Save the updated user
     await user.save();

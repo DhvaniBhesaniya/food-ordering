@@ -3,11 +3,13 @@ import "./Navbar.css";
 import { assets } from "../../assets/frontend_assets/assets";
 import { Link, useNavigate } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 const Navbar = ({ setShowLogin }) => {
   const [menu, setMenu] = useState("menu");
   const [searchOpen, setSearchOpen] = useState(false);
-  const { getTotalCartAmount, token, setToken, setCartItems ,setUserData} = useContext(StoreContext);
+  const { getTotalCartAmount, token, setToken, setCartItems, setUserData } =
+    useContext(StoreContext);
 
   const navigate = useNavigate();
   const logout = () => {
@@ -21,7 +23,7 @@ const Navbar = ({ setShowLogin }) => {
   return (
     <div className="navbar">
       <Link to={"/"}>
-        <img src={assets.logo} alt="" className="logo" />
+        <img src={assets.logo} alt="Logo" className="logo" />
       </Link>
       <ul className="navbar-menu">
         <Link
@@ -55,39 +57,43 @@ const Navbar = ({ setShowLogin }) => {
       </ul>
       <div className="navbar-right">
         <div className={`search-container ${searchOpen ? "open" : ""}`}>
-          <input type="text" placeholder="Search..." className="search-input" />
-          <img
-            src={assets.search_icon}
-            alt="Search"
-            className="search-icon"
+          <button
+            className="btn-search"
             onClick={() => setSearchOpen(!searchOpen)}
+          >
+            <i className="fas fa-search"></i>
+          </button>
+          <input
+            type="text"
+            className="input-search"
+            placeholder="Type to Search..."
           />
         </div>
         <div className="navbar-search-icon">
           <Link to={"/cart"}>
-            <img src={assets.basket_icon} alt="" />
+            <img src={assets.basket_icon} alt="Cart" />
           </Link>
           <div className={getTotalCartAmount() === 0 ? "" : "dot"}></div>
         </div>
         {!token ? (
-          <button onClick={() => setShowLogin(true)}>sign in </button>
+          <button className="sign-in-button" onClick={() => setShowLogin(true)}>sign in</button>
         ) : (
           <div className="navbar-profile">
-            <img src={assets.profile_icon} alt="" />
+            <img src={assets.profile_icon} alt="Profile" />
             <ul className="nav-profile-dropdown">
               <Link to={"/profile"}>
                 <li>
-                  <img src={assets.profile_icon} alt="" /> <p>Profile</p>
+                  <img src={assets.profile_icon} alt="Profile" /> <p>Profile</p>
                 </li>
               </Link>
               <Link to={"/myorders"}>
                 <li>
-                  <img src={assets.bag_icon} alt="" /> <p>Orders</p>
+                  <img src={assets.bag_icon} alt="Orders" /> <p>Orders</p>
                 </li>
               </Link>
               <hr />
               <li onClick={logout}>
-                <img src={assets.logout_icon} alt="" />
+                <img src={assets.logout_icon} alt="Logout" />
                 <p>Logout</p>
               </li>
             </ul>
@@ -99,31 +105,6 @@ const Navbar = ({ setShowLogin }) => {
 };
 
 export default Navbar;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import React, { useContext, useState } from "react";
 // import "./Navbar.css";

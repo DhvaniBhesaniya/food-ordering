@@ -11,6 +11,7 @@ const StoreContextProvider = (props) => {
   // const url = "http://localhost:4000";
   const [token, setToken] = useState("");
   const [userData, setUserData] = useState({});
+  // console.log(userData);
 
   const addtoCart = async (itemId) => {
     if (!cartItems[itemId]) {

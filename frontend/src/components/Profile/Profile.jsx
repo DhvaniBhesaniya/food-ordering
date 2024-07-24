@@ -1,65 +1,80 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import "./Profile.css";
 import SaveButton from "./saveButton/SaveButton";
 import CancelButton from "./cancelButton/CancelButton";
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import { StoreContext } from "../../context/StoreContext";
 
 const Profile = () => {
+  const { userData } = useContext(StoreContext);
   const [activeTab, setActiveTab] = useState("general");
   const [profileImage, setProfileImage] = useState(null);
-  const { userData } = useContext(StoreContext);
-
   const [formData, setFormData] = useState({
-    // userId:userData._id,
-    customerId: userData.customerId,
+    customerId: "#" + userData.customerId,
     name: userData.name,
     email: userData.email,
     phoneNumber: "+91 1234567890",
     currentPassword: "",
     newPassword: "",
+    profileImg: "",
   });
+
+  useEffect(() => {
+    if (userData && userData.profileImg) {
+      const imageUrl = `/images/user_pic/${userData.customerId}/${userData.profileImg}`;
+      setProfileImage(imageUrl);
+    }
+  }, [userData]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleImageChange = (event) => {
+    const file = event.target.files[0]; // Get the selected file
+    if (file) {
+      setProfileImage(URL.createObjectURL(file)); // Display the selected image
+      setFormData({ ...formData, profileImg: file }); // Add file to formData
+    }
+  };
+
   const updateUserDetails = async () => {
+    const data = new FormData(); // Create a new FormData object
+
+    // Append form data
+    data.append("name", formData.name);
+    data.append("email", formData.email);
+    data.append("phoneNumber", formData.phoneNumber);
+    data.append("currentPassword", formData.currentPassword);
+    data.append("newPassword", formData.newPassword);
+    if (formData.profileImg) {
+      data.append("profileImg", formData.profileImg); // Append the image file
+    }
+
     try {
-      // Make an API call to update the user details
       const response = await fetch("/api/user/updateuser", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           token: localStorage.getItem("token"),
         },
-        body: JSON.stringify(formData),
+        body: data, // Send FormData
       });
       const result = await response.json();
       if (result.success) {
-        // Handle successful update
         console.log("User details updated successfully");
       } else {
-        // Handle update failure
         alert(result.message);
-
         console.error("Failed to update user details", result.message);
       }
     } catch (error) {
       console.error("Error updating user details", error);
     }
   };
+
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
-
-  // const handleImageChange = (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) {
-  //     const reader = new FileReader();
-  //     reader.onload = (e) => setProfileImage(e.target.result);
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
 
   return (
     <div className="container">
@@ -73,10 +88,12 @@ const Profile = () => {
                   id="profile-image-input"
                   accept="image/*"
                   className="profile-image-input"
+                  onChange={handleImageChange}
                 />
                 <label
                   htmlFor="profile-image-input"
                   className="profile-image-label"
+                  onClick={(e) => e.preventDefault()} // Prevents the input from opening on image click
                 >
                   {profileImage ? (
                     <img
@@ -90,7 +107,16 @@ const Profile = () => {
                     </div>
                   )}
                 </label>
+                  <div
+                    className="edit-button"
+                    onClick={() =>
+                      document.getElementById("profile-image-input").click()
+                    }
+                  >
+                    <i className="fa fa-pencil-alt"></i>
+                  </div>
               </div>
+
               <div className="list-group">
                 <a
                   className={`list-group-item ${
@@ -211,7 +237,7 @@ const Profile = () => {
           <CancelButton
             onClick={() =>
               setFormData({
-                customerId: userData.customerId,
+                customerId: "#" + userData.customerId,
                 name: userData.name,
                 email: userData.email,
                 phoneNumber: "+91 1234567890",

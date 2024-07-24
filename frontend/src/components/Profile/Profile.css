@@ -131,15 +131,18 @@
   display: block;
   width: 100%;
   height: 100%;
-  border-radius: 50%;
+  border-radius: 50%; /* Make the image circular */
   overflow: hidden;
   cursor: pointer;
+  position: relative; /* For positioning the edit button */
+  border: 4px solid tomato; /* Add a tomato-colored border */
 }
 
 .profile-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 50%; /* Ensure the image is circular */
 }
 
 .profile-image-placeholder {
@@ -152,6 +155,30 @@
   font-size: 22px;
   color: #ccc;
 }
+
+.edit-button {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: #ffffff;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 1; /* Ensure the button is on top */
+}
+
+.edit-button i {
+  color: rgb(0, 0, 0); /* Match the color of the border */
+  font-size: 16px;
+}
+
+
+
 
 /* Responsive styles */
 @media (max-width: 768px) {

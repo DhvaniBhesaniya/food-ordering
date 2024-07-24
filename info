@@ -19,6 +19,9 @@ npm install swiper
 
  npm install axios
 
+npm install @fortawesome/fontawesome-free     //  import '@fortawesome/fontawesome-free/css/all.min.css';
+
+
 
 above done in frontend
 .............................................................
