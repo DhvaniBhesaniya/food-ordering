@@ -16,6 +16,11 @@ a {
   color: inherit;
 }
 .app {
+  width: 100%;
+  margin: auto;
+  
+}
+.container-box{
   width: 90%;
   margin: auto;
 }

@@ -35,6 +35,8 @@ const App = () => {
       ) : (
         <><div className="app">
             <Navbar setShowLogin={setShowLogin} />
+        <div className="container-box">
+          
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/cart" element={<Cart />} />
@@ -43,6 +45,7 @@ const App = () => {
               <Route path="/myorders" element={<MyOrders />} />
               <Route path="/profile" element={<Profile />} />
             </Routes>
+        </div>
           </div><Footer /></>
       )}
     </>
