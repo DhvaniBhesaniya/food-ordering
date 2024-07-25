@@ -1,62 +1,89 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./Orders.css";
-import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import axios from "axios";
 import { assets } from "../../assets/admin_assets/assets";
+
 const Orders = () => {
   const [orders, setOrders] = useState([]);
+
   const fetchAllOrders = async () => {
-    const response = await axios.get("/api/order/list");
-    if (response.data.success) {
-      setOrders(response.data.data);
-      // console.log(response.data.data);
-    } else {
-      toast.error(response.data.message);
+    try {
+      const response = await fetch("/api/order/list");
+      const data = await response.json();
+      if (data.success) {
+        setOrders(data.data);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      toast.error("Failed to fetch orders");
     }
   };
+
   const statusHandler = async (event, orderId) => {
-    const response = await axios.post("/api/order/status", {
-      orderId,
-      status: event.target.value,
-    });
-    if (response.data.success){
-      await fetchAllOrders();
+    const newStatus = event.target.value;
+    try {
+      // Optimistically update the UI
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order._id === orderId ? { ...order, status: newStatus } : order
+        )
+      );
+
+      const response = await fetch("/api/order/status", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderId,
+          status: newStatus,
+        }),
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success(`Order status successfully changed to ${newStatus}`);
+      } else {
+        // Revert the optimistic update if the API call fails
+        await fetchAllOrders();
+        toast.error(data.message || "Failed to update order status");
+      }
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      await fetchAllOrders(); // Revert the optimistic update
+      toast.error("An error occurred while updating order status");
     }
   };
+
   useEffect(() => {
     fetchAllOrders();
-  }, []);
+  }, []); // Remove dependency on orders
 
   return (
     <div className="order add">
       <h3>Order Page</h3>
       <div className="order-list">
         {orders.map((order, index) => (
-          <div key={index} className="order-item">
+          <div key={order._id} className="order-item">
             <img src={assets.parcel_icon} alt="" />
             <div>
               <p className="order-item-food">
-                {order.items.map((item, index) => {
-                  if (index === order.items.length - 1) {
-                    return item.name + " x " + item.quantity;
-                  }
-                  return item.name + " x " + item.quantity + ", ";
-                })}
+                {order.items.map(
+                  (item, idx) =>
+                    `${item.name} x ${item.quantity}${
+                      idx < order.items.length - 1 ? ", " : ""
+                    }`
+                )}
               </p>
               <p className="order-item-name">
-                {order.address.firstName + " " + order.address.lastName}
+                {`${order.address.firstName} ${order.address.lastName}`}
               </p>
               <div className="order-item-address">
-                <p>{order.address.street + ","}</p>
+                <p>{`${order.address.street},`}</p>
                 <p>
-                  {order.address.city +
-                    ", " +
-                    order.address.state +
-                    ", " +
-                    order.address.country +
-                    ", " +
-                    order.address.zipCode}
+                  {`${order.address.city}, ${order.address.state}, ${order.address.country}, ${order.address.zipCode}`}
                 </p>
               </div>
               <p className="order-item-phone">{order.address.phone}</p>
@@ -66,6 +93,7 @@ const Orders = () => {
             <select
               onChange={(event) => statusHandler(event, order._id)}
               value={order.status}
+              disabled={order.status === "Delivered"}
             >
               <option value="Food Processing">Food Processing</option>
               <option value="Out for delivery">Out for delivery</option>

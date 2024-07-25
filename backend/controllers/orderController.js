@@ -8,8 +8,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // placing the order for frontend
 const placeOrder = async (req, res) => {
-  const frontend_url = "http://localhost:5173";
-  // const frontend_url = "https://food-ordering-xaxd.onrender.com";
+  // const frontend_url = "http://localhost:5173";
+  const frontend_url = "https://food-ordering-xaxd.onrender.com";
 
   try {
     const newOrder = new orderModel({
@@ -122,42 +122,47 @@ const updateStatus = async (req, res) => {
     const { orderId, status } = req.body;
 
     // Update the order status
-    const updatedOrder = await orderModel.findByIdAndUpdate(orderId, {
-      status: status,
-    });
+    const updatedOrder = await orderModel.findByIdAndUpdate(
+      orderId,
+      { status: status },
+      { new: true } // This option returns the updated document
+    );
 
     if (!updatedOrder) {
-      return res.status(404).json({ message: "Order not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
     }
 
     // If the status is "Delivered", move the order to user's orderHistory
     if (status === "Delivered") {
-      const user = await userModel.findById(updatedOrder.userId);
+      const user = await userModel.findByIdAndUpdate(
+        updatedOrder.userId,
+        { $addToSet: { orderHistory: updatedOrder._id } },
+        { new: true }
+      );
 
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found" });
       }
 
-      // Add the order to user's orderHistory if it doesn't already exist
-      if (!user.orderHistory.includes(updatedOrder._id)) {
-        user.orderHistory.push(updatedOrder._id);
-        await user.save();
-      } else {
-        console.log("Order already exists in user's orderHistory");
-      }
-
-      // // Remove the order from the orderModel
-      // await orderModel.findByIdAndDelete(orderId);
-
-      return res
-        .status(200)
-        .json({ message: "Order delivered and moved to user's history" });
+      return res.status(200).json({
+        success: true,
+        message: "Order delivered and moved to user's history",
+        data: updatedOrder,
+      });
     }
 
-    res.status(200).json(updatedOrder);
+    res.status(200).json({
+      success: true,
+      message: "Order status updated successfully",
+      data: updatedOrder,
+    });
   } catch (error) {
     console.error("Error updating order status:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 // //api for updating order status from admin side.
