@@ -29,6 +29,7 @@ above done in frontend
 
 
 
+
 npm init
 npm install express mongoose jsonwebtoken bcrypt cors dotenv body-parser multer stripe validator nodemon
 
@@ -59,6 +60,8 @@ this gist  (  import { ToastContainer, toast } from 'react-toastify';
   https://www.npmjs.com/package/react-toastify?activeTab=readme
 
 above done in admin
+.............................................................
+b7fa5594fbc6fa24988a1e00dd3faf7acba8ea50  this commit is a working code commit
 .............................................................
 
 
