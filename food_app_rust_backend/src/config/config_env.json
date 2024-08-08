@@ -1,0 +1,6 @@
+{
+  "mongodb_url": "mongodb+srv://tomato:mytomatodb@gohan.kns9i2e.mongodb.net/food-delivery?retryWrites=true&w=majority&appName=gohan",
+  "port": 4000,
+  "jwt_secret": "random#secret",
+  "stripe_secret_key": "sk_test_51PZ54HRtqMxXmkr4Q3MA0jg5H0k06yQJ5y9e1Ch1we6smsALhrKGNAH7X4kfhJohswoDwzlYar1hfvxtEJWGJKTX00XZdafYL2"
+}
