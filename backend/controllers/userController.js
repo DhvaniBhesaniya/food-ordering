@@ -62,12 +62,14 @@ const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Generating a dynamic customer ID
-    const lastUser = await userModel.findOne().sort({ createdAt: -1 });
+    const lastUser = await userModel.findOne({}).sort({ customerId: -1 });
+
     let customerId;
     if (lastUser && lastUser.customerId) {
       const lastCustomerNumber = parseInt(
-        lastUser.customerId.replace("#Customer", "")
+        lastUser.customerId.replace("Customer", "")
       );
+
       customerId = `Customer${lastCustomerNumber + 1}`;
     } else {
       customerId = "Customer1";
@@ -114,7 +116,7 @@ const getUserData = async (req, res) => {
 
 const updateUserData = async (req, res) => {
   const { name, email, phoneNumber, currentPassword, newPassword } = req.body;
-  
+
   try {
     // extracting user id from token
     const token = req.headers.token;
@@ -128,7 +130,10 @@ const updateUserData = async (req, res) => {
     if (currentPassword && newPassword) {
       const isMatch = await bcrypt.compare(currentPassword, user.password);
       if (!isMatch) {
-        return res.json({ success: false, message: 'Current password is incorrect' });
+        return res.json({
+          success: false,
+          message: "Current password is incorrect",
+        });
       }
 
       // Hash the new password
@@ -144,15 +149,15 @@ const updateUserData = async (req, res) => {
     if (email) user.email = email;
     // if (phoneNumber) user.phoneNumber = phoneNumber;
 
-     // Update the profile image if provided
-     if (req.file) {
+    // Update the profile image if provided
+    if (req.file) {
       user.profileImg = req.file.originalname;
     }
 
     // Save the updated user
     await user.save();
 
-    res.json({ success: true, message: 'User details updated successfully' });
+    res.json({ success: true, message: "User details updated successfully" });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }

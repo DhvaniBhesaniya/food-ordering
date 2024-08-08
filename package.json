@@ -2,7 +2,7 @@
   "name": "food-ordering-app",
   "version": "1.0.0",
   "description": "Tomato Food ordering app, order and eat..",
-  "main": "server.js",
+  "main": "backend/server.js",
   "type":"module",
   "scripts": {
      "dev":"nodemon backend/server.js",
