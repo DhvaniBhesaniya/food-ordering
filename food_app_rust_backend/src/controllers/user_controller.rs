@@ -3,7 +3,7 @@ use axum::{
     http::StatusCode,
     response::{IntoResponse,Response},
 };
-use bcrypt::{hash, DEFAULT_COST};
+use bcrypt::{hash, DEFAULT_COST,verify};
 use jsonwebtoken::{encode, Header, EncodingKey};
 use mongodb::bson::doc;
 use serde::{Deserialize, Serialize};
@@ -19,6 +19,12 @@ pub struct RegisterUser {
     pub email: String,
 }
 
+
+#[derive(Debug, Deserialize)]
+pub struct LoginUser {
+    pub email: String,
+    pub password: String,
+}
 #[derive(Debug, Serialize)]
 struct Claims {
     id: String,
@@ -77,6 +83,45 @@ pub async fn register_user(Json(payload): Json<RegisterUser>) -> impl IntoRespon
         Json(json!({
             "success": true,
             "message": "User registered successfully",
+            "token": token,
+        })),
+    )
+}
+
+
+pub async fn login_user(Json(payload): Json<LoginUser>) -> impl IntoResponse {
+    let collection = User::get_user_collection().await;
+    let config = Config::from_env();
+    let jwt_secret = &config.jwt_secret;
+
+    // Checking if the user exists
+    let user = match collection.find_one(doc! { "email": &payload.email }).await.unwrap() {
+        Some(user) => user,
+        None => {
+            return (
+                StatusCode::UNAUTHORIZED,
+                Json(json!({ "success": false, "message": "User does not exist" })),
+            );
+        }
+    };
+
+    // Verifying password
+    if !verify(&payload.password, &user.password).unwrap() {
+        return (
+            StatusCode::UNAUTHORIZED,
+            Json(json!({ "success": false, "message": "Invalid Password" })),
+        );
+    }
+
+    // Creating JWT token
+    let claims = Claims { id: user.id.unwrap().to_hex(), exp: 3600 * 24 }; // 24-hour expiration
+    let token = encode(&Header::default(), &claims, &EncodingKey::from_secret(jwt_secret.as_ref())).unwrap();
+
+    (
+        StatusCode::OK,
+        Json(json!({
+            "success": true,
+            "message": "Login successful",
             "token": token,
         })),
     )
