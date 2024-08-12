@@ -1,4 +1,5 @@
 use mongodb::bson::oid::ObjectId;
+use mongodb::bson::Document;
 use mongodb::Collection;
 use mongodb::{options::ClientOptions, Client};
 use serde::{Deserialize, Serialize};
@@ -22,10 +23,10 @@ pub struct User {
 }
 
 impl User {
-    pub async fn get_user_collection() -> Collection<User> {
+    pub async fn get_user_collection() -> Collection<Document> {
         let config = crate::config::env::Config::from_env();
         let client_options = ClientOptions::parse(&config.mongodb_url).await.unwrap();
         let client = Client::with_options(client_options).unwrap();
-        client.database("food-delivery").collection::<User>("users")
+        client.database("food-delivery").collection::<Document>("users")
     }
 }
