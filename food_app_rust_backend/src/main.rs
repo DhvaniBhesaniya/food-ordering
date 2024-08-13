@@ -1,23 +1,25 @@
 use axum::{routing::get, Router};
+use configration::db::connect_db;
 use tower_http::services::ServeDir;
 // use models::user_model::User;
 // use mongodb::bson::doc;
 // use mongodb::bson::oid::ObjectId;
-use crate::config::db::connect_db;
-use crate::config::env::Config;
+
 use crate::routes::{
     create_cart_routes, create_food_routes, create_order_routes, create_user_routes,
 };
 use std::net::SocketAddr;
 use std::path::PathBuf;
-use std::sync::Arc;
+
 use tokio;
 
-mod config;
+mod configration;
 mod controllers;
 mod middleware;
 mod models;
 mod routes;
+
+use crate::configration::gett;
 
 #[tokio::main]
 async fn main() {
@@ -27,9 +29,10 @@ async fn main() {
     //     let bson_document = collection.find_one(doc! { "_id": user_id.unwrap() }).await.unwrap();
     // println!("Raw BSON document: {:?}", bson_document);
 
-    let config = Arc::new(Config::from_env());
+    // let config = Arc::new(Config::from_env());
 
-    let _db_client = connect_db(config.clone()).await;
+    // let _db_client = connect_db(config.clone()).await;
+    let _db_client = connect_db().await;
 
     // Define the path to the uploads directory
     let uploads_dir = PathBuf::from("uploads");
@@ -39,10 +42,10 @@ async fn main() {
         .merge(create_user_routes())
         .merge(create_cart_routes())
         .merge(create_order_routes())
-        .nest_service("/images", ServeDir::new(uploads_dir));
-    // .nest("/images/user_pic", axum::routing::get_service(ServeDir::new("./uploads/user_profiles")));
+        .nest_service("/images", ServeDir::new(uploads_dir))
+        .nest_service("/images/user_pic", ServeDir::new("./uploads/user_profiles"));
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], config.port));
+    let addr = SocketAddr::from(([127, 0, 0, 1], gett("port")));
 
     println!("Server running on http://{}", addr);
 
@@ -56,4 +59,3 @@ async fn handler() -> &'static str {
     println!("Rust API working");
     "Rust API working.."
 }
-

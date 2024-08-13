@@ -162,6 +162,7 @@ dependencies = [
  "matchit",
  "memchr",
  "mime 0.3.17",
+ "multer",
  "percent-encoding 2.3.1",
  "pin-project-lite",
  "rustversion",
@@ -1544,6 +1545,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "multer"
+version = "3.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "83e87776546dc87511aa5ee218730c92b666d7264ab6ed41f9d215af9cd5224b"
+dependencies = [
+ "bytes",
+ "encoding_rs",
+ "futures-util",
+ "http 1.1.0",
+ "httparse",
+ "memchr",
+ "mime 0.3.17",
+ "spin",
+ "version_check 0.9.5",
+]
+
+[[package]]
 name = "multipart"
 version = "0.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2231,6 +2249,7 @@ dependencies = [
  "js-sys",
  "log 0.4.22",
  "mime 0.3.17",
+ "mime_guess 2.0.5",
  "native-tls",
  "once_cell",
  "percent-encoding 2.3.1",

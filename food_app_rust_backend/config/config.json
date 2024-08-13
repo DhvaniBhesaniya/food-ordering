@@ -1,4 +1,5 @@
 {
+  "env": "production",
   "mongodb_url": "mongodb+srv://tomato:mytomatodb@gohan.kns9i2e.mongodb.net/food-delivery?retryWrites=true&w=majority&appName=gohan",
   "port": 4000,
   "jwt_secret": "random#secret",

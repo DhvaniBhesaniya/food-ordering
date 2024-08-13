@@ -1,8 +1,7 @@
-use crate::config::env::Config;
-use crate::middleware::auth::Claimss;
 use crate::models::user_model::User;
+use crate::{configration, middleware::auth::Claimss};
 use axum::{
-    extract::{Extension, Json},
+    extract::{Extension, Json, Multipart},
     http::StatusCode,
     response::{IntoResponse, Response},
 };
@@ -16,6 +15,11 @@ use mongodb::{
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use validator::validate_email;
+
+use std::fs::{self, File};
+use std::io::Write;
+use std::net::SocketAddr;
+use std::path::{Path, PathBuf};
 
 #[derive(Debug, Deserialize)]
 pub struct RegisterUser {
@@ -54,10 +58,19 @@ pub struct UserResponse {
     pub version: Option<i32>,
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+pub struct UpdateUserData {
+    pub name: Option<String>,
+    pub email: Option<String>,
+    pub current_password: Option<String>,
+    pub phone_number: Option<String>,
+    pub new_password: Option<String>,
+}
+
 pub async fn register_user(Json(payload): Json<RegisterUser>) -> impl IntoResponse {
     let collection = User::get_user_collection().await;
-    let config = Config::from_env();
-    let jwt_secret = &config.jwt_secret;
+
+    let jwt_secret = configration::gett::<String>("jwt_secret");
 
     // Checking if the user already exists
     if collection
@@ -157,8 +170,8 @@ pub async fn register_user(Json(payload): Json<RegisterUser>) -> impl IntoRespon
 
 pub async fn login_user(Json(payload): Json<LoginUser>) -> impl IntoResponse {
     let collection = User::get_user_collection().await;
-    let config = Config::from_env();
-    let jwt_secret = &config.jwt_secret;
+
+    let jwt_secret = configration::gett::<String>("jwt_secret");
 
     // Checking if the user exists
     let user_doc = match collection
@@ -216,7 +229,6 @@ pub async fn login_user(Json(payload): Json<LoginUser>) -> impl IntoResponse {
 }
 
 pub async fn get_user_data(Extension(claims): Extension<Claimss>) -> impl IntoResponse {
-   
     let user_id = match ObjectId::parse_str(&claims.id) {
         Ok(oid) => oid,
         Err(_) => {
@@ -293,3 +305,274 @@ pub async fn get_user_data(Extension(claims): Extension<Claimss>) -> impl IntoRe
         }
     }
 }
+
+
+pub async fn update_user_data(
+    Extension(claims): Extension<Claimss>,
+    mut multipart: Multipart,
+) -> impl IntoResponse {
+    // Initialize the user collection
+    let collection = User::get_user_collection().await;
+    let user_id = match ObjectId::parse_str(&claims.id) {
+        Ok(id) => id,
+        Err(_) => return (
+            StatusCode::BAD_REQUEST,
+            Json(json!({ "success": false, "message": "Invalid user ID" })),
+        ),
+    };
+
+    // Get the user's document
+    let filter = doc! { "_id": user_id };
+    let user_doc = match collection.find_one(filter.clone()).await {
+        Ok(Some(doc)) => doc,
+        Ok(None) => return (
+            StatusCode::NOT_FOUND,
+            Json(json!({ "success": false, "message": "User not found" })),
+        ),
+        Err(_) => return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({ "success": false, "message": "Failed to fetch user data" })),
+        ),
+    };
+
+    // Prepare fields for update
+    let mut update_fields = doc! {};
+    let mut profile_img_name = None;
+    let mut current_password = None;
+    let mut new_password = None;
+
+    // Process form fields and file upload
+    while let Some(mut field) = multipart.next_field().await.unwrap() {
+        match field.name() {
+            Some("profileImg") => {
+                if let Some(file_name) = field.file_name() {
+                    let file_name = file_name.to_string();
+                    
+                    // Define the user-specific folder
+                    let user_folder = format!("uploads/user_profiles/{}", user_doc.get_str("customerId").unwrap());
+                    let user_folder_path = PathBuf::from(&user_folder);
+
+                    // Create the folder if it doesn't exist
+                    if !user_folder_path.exists() {
+                        std::fs::create_dir_all(&user_folder_path).unwrap();
+                    }
+
+                    // Save the file
+                    let file_path = user_folder_path.join(&file_name);
+                    let mut file = File::create(&file_path).unwrap();
+                    while let Some(chunk) = field.chunk().await.unwrap() {
+                        file.write_all(&chunk).unwrap();
+                    }
+
+                    profile_img_name = Some(file_name);
+                }
+            }
+            Some("name") => {
+                let name_value = field.text().await.unwrap();
+                update_fields.insert("name", name_value);
+            }
+            Some("email") => {
+                let email_value = field.text().await.unwrap();
+                update_fields.insert("email", email_value);
+            }
+            Some("phoneNumber") => {
+                let phone_value = field.text().await.unwrap();
+                update_fields.insert("phoneNumber", phone_value);
+            }
+            Some("currentPassword") => {
+                current_password = Some(field.text().await.unwrap());
+            }
+            Some("newPassword") => {
+                new_password = Some(field.text().await.unwrap());
+            }
+            _ => {}
+        }
+    }
+
+    // Handle password change
+    if let (Some(current), Some(new)) = (current_password, new_password) {
+        if current.is_empty() || new.is_empty() {
+            return (
+                StatusCode::BAD_REQUEST,
+                Json(json!({ "success": false, "message": "Current password and new password cannot be empty" })),
+            );
+        }
+        let stored_password = user_doc.get_str("password").unwrap();
+        if verify(&current, stored_password).unwrap() {
+            let hashed_password = hash(new, DEFAULT_COST).unwrap();
+            update_fields.insert("password", hashed_password);
+        } else {
+            return (
+                StatusCode::BAD_REQUEST,
+                Json(json!({ "success": false, "message": "Current password is incorrect" })),
+            );
+        }
+    }
+
+    // Set profile image if provided
+    if let Some(img_name) = profile_img_name {
+        update_fields.insert("profileImg", img_name);
+    }
+
+    // Update the user document in MongoDB
+    if !update_fields.is_empty() {
+        let update_doc = doc! { "$set": update_fields };
+        if collection.update_one(filter, update_doc).await.is_err() {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({ "success": false, "message": "Failed to update user data" })),
+            );
+        }
+    }
+
+    // Return a success response
+    (
+        StatusCode::OK,
+        Json(json!({ "success": true, "message": "User details updated successfully" })),
+    )
+}
+
+// pub async fn update_user_data(
+//     Extension(claims): Extension<Claimss>,
+//     mut multipart: Multipart,
+//     // Json(payload): Json<UpdateUserData>,
+// ) -> impl IntoResponse {
+//     // Initialize the user collection
+//     let collection = User::get_user_collection().await;
+
+//     // Parse user ID
+//     let user_id = match mongodb::bson::oid::ObjectId::parse_str(&claims.id) {
+//         Ok(id) => id,
+//         Err(_) => return (
+//             StatusCode::BAD_REQUEST,
+//             Json(json!({ "success": false, "message": "Invalid user ID" })),
+//         ),
+//     };
+
+//     // Get the user's document
+//     let filter = doc! { "_id": user_id };
+//     let user_doc = match collection.find_one(filter.clone()).await {
+//         Ok(Some(doc)) => doc,
+//         Ok(None) => return (
+//             StatusCode::NOT_FOUND,
+//             Json(json!({ "success": false, "message": "User not found" })),
+//         ),
+//         Err(_) => return (
+//             StatusCode::INTERNAL_SERVER_ERROR,
+//             Json(json!({ "success": false, "message": "Failed to fetch user data" })),
+//         ),
+//     };
+
+//     // Handle file upload
+//     let mut profile_img_name = None;
+//     while let Some(mut field) = match multipart.next_field().await {
+//         Ok(f) => f,
+//         Err(_) => return (
+//             StatusCode::BAD_REQUEST,
+//             Json(json!({ "success": false, "message": "Failed to read multipart data" })),
+//         ),
+//     } {
+//         if field.name() == Some("profileImg") {
+//             let file_name = match field.file_name() {
+//                 Some(name) => name.to_string(),
+//                 None => return (
+//                     StatusCode::BAD_REQUEST,
+//                     Json(json!({ "success": false, "message": "Missing file name" })),
+//                 ),
+//             };
+
+//             // Define the user-specific folder
+//             let user_folder = format!("uploads/user_profiles/{}", user_doc.get_str("customerId").unwrap_or(&"default".to_string()));
+//             let user_folder_path = PathBuf::from(&user_folder);
+
+//             // Create the folder if it doesn't exist
+//             if !user_folder_path.exists() {
+//                 if let Err(err) = fs::create_dir_all(&user_folder_path) {
+//                     return (
+//                         StatusCode::INTERNAL_SERVER_ERROR,
+//                         Json(json!({ "success": false, "message": format!("Failed to create directory: {}", err) })),
+//                     );
+//                 }
+//             }
+
+//             // Save the file
+//             let file_path = user_folder_path.join(&file_name);
+//             let mut file = match File::create(&file_path) {
+//                 Ok(f) => f,
+//                 Err(err) => return (
+//                     StatusCode::INTERNAL_SERVER_ERROR,
+//                     Json(json!({ "success": false, "message": format!("Failed to create file: {}", err) })),
+//                 ),
+//             };
+//             while let Some(chunk) = match field.chunk().await {
+//                 Ok(c) => c,
+//                 Err(_) => return (
+//                     StatusCode::INTERNAL_SERVER_ERROR,
+//                     Json(json!({ "success": false, "message": "Failed to read file chunk" })),
+//                 ),
+//             } {
+//                 if let Err(err) = file.write_all(&chunk) {
+//                     return (
+//                         StatusCode::INTERNAL_SERVER_ERROR,
+//                         Json(json!({ "success": false, "message": format!("Failed to write to file: {}", err) })),
+//                     );
+//                 }
+//             }
+
+//             // Update the user document with the new profile image name
+//             profile_img_name = Some(file_name);
+//         }
+//     }
+
+//     // Prepare update fields
+//     let mut update_fields = doc! {};
+
+//     // Uncomment and handle the payload fields if needed
+//     // if let Some(name) = payload.name {
+//     //     update_fields.insert("name", name);
+//     // }
+
+//     // if let Some(email) = payload.email {
+//     //     update_fields.insert("email", email);
+//     // }
+
+//     // if let Some(current_password) = payload.current_password {
+//     //     if let Some(new_password) = payload.new_password {
+//     //         // Verify the current password
+//     //         let stored_password = match user_doc.get_str("password") {
+//     //             Ok(p) => p,
+//     //             Err(_) => return (
+//     //                 StatusCode::BAD_REQUEST,
+//     //                 Json(json!({ "success": false, "message": "Password verification failed" })),
+//     //             ),
+//     //         };
+//     //         if bcrypt::verify(&current_password, stored_password).map_err(|_| UpdateUserError::PasswordVerificationError)? {
+//     //             // Hash the new password
+//     //             let hashed_password = bcrypt::hash(new_password, bcrypt::DEFAULT_COST).map_err(|_| UpdateUserError::PasswordHashingError)?;
+//     //             update_fields.insert("password", hashed_password);
+//     //         } else {
+//     //             return (
+//     //                 StatusCode::BAD_REQUEST,
+//     //                 Json(json!({ "success": false, "message": "Current password is incorrect" })),
+//     //             );
+//     //         }
+//     //     }
+//     // }
+
+//     if let Some(profile_img_name) = profile_img_name {
+//         update_fields.insert("profileImg", profile_img_name);
+//     }
+
+//     // Update the user document in MongoDB
+//     if !update_fields.is_empty() {
+//         if let Err(_) = collection.update_one(filter, doc! { "$set": update_fields }).await {
+//             return (
+//                 StatusCode::INTERNAL_SERVER_ERROR,
+//                 Json(json!({ "success": false, "message": "Failed to update user document" })),
+//             );
+//         }
+//     }
+
+//     // Return a success response
+//     (StatusCode::OK, Json(json!({ "success": true, "message": "User details updated successfully" })))
+// }

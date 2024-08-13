@@ -3,6 +3,8 @@ use mongodb::bson::Document;
 use mongodb::Collection;
 use mongodb::{options::ClientOptions, Client};
 use serde::{Deserialize, Serialize};
+
+use crate::configration::gett;
 // use std::env;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -24,8 +26,8 @@ pub struct User {
 
 impl User {
     pub async fn get_user_collection() -> Collection<Document> {
-        let config = crate::config::env::Config::from_env();
-        let client_options = ClientOptions::parse(&config.mongodb_url).await.unwrap();
+        let url = gett::<String>("mongodb_url");
+        let client_options = ClientOptions::parse(url).await.unwrap();
         let client = Client::with_options(client_options).unwrap();
         client.database("food-delivery").collection::<Document>("users")
     }

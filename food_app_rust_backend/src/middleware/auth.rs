@@ -6,7 +6,8 @@ use axum::{
 };
 use jsonwebtoken::{decode, Algorithm, DecodingKey, TokenData, Validation};
 use serde::Deserialize;
-use crate::config::env::Config;
+
+use crate::configration;
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct Claimss {
@@ -23,8 +24,8 @@ pub async fn auth_middleware(mut req: Request, next: Next) -> Result<Response, S
     
 
     // Read the secret from config
-    let config = Config::from_env();
-    let jwt_secret = &config.jwt_secret;
+  
+    let jwt_secret = configration::gett::<String>("jwt_secret");
     
     // Verify and decode token
     let token_data: TokenData<Claimss> = match decode(
