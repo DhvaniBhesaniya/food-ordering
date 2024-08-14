@@ -22,16 +22,16 @@ pub fn get_res<'de, T: Deserialize<'de>>(key: &str) -> Result<T, config::ConfigE
     CONFIG.read().unwrap().get(key)
 }
 
-pub async fn initialize_config() -> Result<(), Box<dyn Error>> {
-    let config_result = settings::get_async_config().await;
-    match config_result {
-        Ok(result) => {
-            let mut m_config = CONFIG.write().unwrap();
-            *m_config = result;
-             Ok(())
-        }
-        Err(error) => {
-             Err(error)
-        }
-    }
-}
+// pub async fn initialize_config() -> Result<(), Box<dyn Error>> {
+//     let config_result = settings::get_async_config().await;
+//     match config_result {
+//         Ok(result) => {
+//             let mut m_config = CONFIG.write().unwrap();
+//             *m_config = result;
+//              Ok(())
+//         }
+//         Err(error) => {
+//              Err(error)
+//         }
+//     }
+// }

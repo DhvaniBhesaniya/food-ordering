@@ -28,22 +28,22 @@ pub fn get_config() -> Config {
     s
 }
 
-pub async fn get_async_config() -> Result<Config, Box<dyn Error>> {
-    let run_mode = env::var("RUN_MODE").unwrap_or_else(|_| "development".into());
-    let env_settings = Environment::new();
-    // uncomment UserConfig if you are running in local environment
+// pub async fn get_async_config() -> Result<Config, Box<dyn Error>> {
+//     let run_mode = env::var("RUN_MODE").unwrap_or_else(|_| "development".into());
+//     let env_settings = Environment::new();
+//     // uncomment UserConfig if you are running in local environment
 
-    let s: Config = Config::builder()
-        .add_source(File::with_name("config/config"))
-        .add_source(File::with_name(&format!("config/config-{}", run_mode)).required(false))
-        // .add_async_source(ServiceConfig { env_key: run_mode.to_string() })
-        // This file shouldn't be checked in to git
-        .add_source(env_settings.prefix("app").separator("_"))
-        .build()
-        ?;
-        // .await?;
-    Ok(s)
-}
+//     let s: Config = Config::builder()
+//         .add_source(File::with_name("config/config"))
+//         .add_source(File::with_name(&format!("config/config-{}", run_mode)).required(false))
+//         // .add_async_source(ServiceConfig { env_key: run_mode.to_string() })
+//         // This file shouldn't be checked in to git
+//         .add_source(env_settings.prefix("app").separator("_"))
+//         .build()
+//         ?;
+//         // .await?;
+//     Ok(s)
+// }
 
 // #[derive(Debug)]
 // struct ServiceConfig {

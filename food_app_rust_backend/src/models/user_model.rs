@@ -17,9 +17,9 @@ pub struct User {
     pub email: String,
     pub password: String,
     #[serde(rename = "cartData", skip_serializing_if = "Option::is_none")]
-    pub cart_data: Option<serde_json::Value>,
+    pub cart_data: Option<serde_json::Value>,  // object
     #[serde(rename = "orderHistory", skip_serializing_if = "Option::is_none")]
-    pub order_history: Option<Vec<ObjectId>>,
+    pub order_history: Option<Vec<ObjectId>>,  // array
     #[serde(rename = "profileImg", skip_serializing_if = "Option::is_none")]
     pub profile_img: Option<String>,
 }
