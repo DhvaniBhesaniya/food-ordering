@@ -40,7 +40,6 @@ const MyOrders = () => {
 
     if (response.ok) {
       const data = await response.json();
-console.log(data);
 setHistoryData(data.data);
     } else {
       console.error('Error fetching  history orders:', response.statusText);
