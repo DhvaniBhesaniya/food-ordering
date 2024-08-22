@@ -28,3 +28,4 @@ bcrypt = "0.9"
 hyper = "1.4.1"
 uuid = "1.10.0"
 futures-util = "0.3"
+async-stripe = { version = "0.38.1", features = ["runtime-tokio-hyper"] }

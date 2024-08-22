@@ -45,23 +45,3 @@ pub fn get_config() -> Config {
 //     Ok(s)
 // }
 
-// #[derive(Debug)]
-// struct ServiceConfig {
-//     env_key: String,
-// }
-
-// #[async_trait]
-// impl AsyncSource for ServiceConfig {
-//     async fn collect(&self) -> Result<Map<String, config::Value>, ConfigError> {
-//         let _current_env = &self.env_key;
-//         let response = tikv_db_grpc::get_single_record("SUMS_CONFIG".to_string(), Some("SUM".to_string()), None).await;
-//         // let response = couchbase_db::get_document(config_doc_id, Some("tax_crm_v2_beta".to_string())).await;
-//         match response {
-//             Ok(result) => {
-//                 let config_json: Map<String, config::Value> = serde_json::from_value(result).unwrap();
-//                 Ok(config_json)
-//             }
-//             Err(error) => Err(ConfigError::NotFound(error)),
-//         }
-//     }
-// }
